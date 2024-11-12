@@ -33,9 +33,10 @@ public class UserAlarmService {
         log.info("{}/show-alarm/checked?fcmToken={}", alarmServerProperty.apiURL(), userFcmToken);
 
         ResponseEntity<NotificationExistServiceResponse> result = RestClient.builder()
-            .baseUrl(alarmServerProperty.apiURL() + "/show-alarm/checked?fcmToken=" + userFcmToken)
+            .baseUrl(alarmServerProperty.apiURL() + "/show-alarm/checked?fcmToken=")
             .build()
             .get()
+            .uri(userFcmToken)
             .retrieve()
             .toEntity(NotificationExistServiceResponse.class);
 
