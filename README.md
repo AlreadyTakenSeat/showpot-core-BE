@@ -20,5 +20,3 @@
 |CI/CD|Github Action|
 |API Docs|Swagger, Notion, Confluence|
 |Others|Jira, Discord, Riido, Figma|
-
-## Hexagonal Architecture
