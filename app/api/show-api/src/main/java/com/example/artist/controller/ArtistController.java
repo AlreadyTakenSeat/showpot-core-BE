@@ -20,15 +20,18 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationApiResponse;
+import org.example.dto.response.SuccessResponse;
 import org.example.security.dto.AuthenticatedInfo;
 import org.example.util.ValidatorUser;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,9 +42,10 @@ public class ArtistController {
 
     private final ArtistService artistService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/unsubscriptions")
     @Operation(summary = "구독하지 않은 아티스트 목록 조회")
-    public ResponseEntity<PaginationApiResponse<ArtistUnsubscriptionPaginationApiParam>> getUnsubscribedArtists(
+    public SuccessResponse<PaginationApiResponse<ArtistUnsubscriptionPaginationApiParam>> getUnsubscribedArtists(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject ArtistUnsubscriptionPaginationApiRequest request
     ) {
@@ -57,7 +61,7 @@ public class ArtistController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ArtistUnsubscriptionPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)
@@ -66,9 +70,10 @@ public class ArtistController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/subscriptions")
     @Operation(summary = "구독한 아티스트 목록 조회")
-    public ResponseEntity<PaginationApiResponse<ArtistSubscriptionPaginationApiParam>> getSubscribedArtists(
+    public SuccessResponse<PaginationApiResponse<ArtistSubscriptionPaginationApiParam>> getSubscribedArtists(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject ArtistSubscriptionPaginationApiRequest request
     ) {
@@ -83,7 +88,7 @@ public class ArtistController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ArtistSubscriptionPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)
@@ -92,47 +97,51 @@ public class ArtistController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/subscriptions/count")
     @Operation(summary = "구독한 아티스트 수")
-    public ResponseEntity<NumberOfSubscribedArtistApiResponse> getNumberOfSubscribedArtist(
+    public SuccessResponse<NumberOfSubscribedArtistApiResponse> getNumberOfSubscribedArtist(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             NumberOfSubscribedArtistApiResponse.from(
                 artistService.countSubscribedArtists(info.userId())
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/subscribe")
     @Operation(summary = "구독하기")
-    public ResponseEntity<ArtistSubscriptionApiResponse> subscribe(
+    public SuccessResponse<ArtistSubscriptionApiResponse> subscribe(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @RequestBody ArtistSubscriptionApiRequest request
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             ArtistSubscriptionApiResponse.from(
                 artistService.subscribe(request.toServiceRequest(info.userId()))
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/unsubscribe")
     @Operation(summary = "구독 취소하기")
-    public ResponseEntity<ArtistUnsubscriptionApiResponse> unsubscribe(
+    public SuccessResponse<ArtistUnsubscriptionApiResponse> unsubscribe(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @RequestBody ArtistUnsubscriptionApiRequest request
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             ArtistUnsubscriptionApiResponse.from(
                 artistService.unsubscribe(request.toServiceRequest(info.userId()))
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/search")
     @Operation(summary = "검색하기")
-    public ResponseEntity<PaginationApiResponse<ArtistSearchPaginationApiParam>> search(
+    public SuccessResponse<PaginationApiResponse<ArtistSearchPaginationApiParam>> search(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject ArtistSearchPaginationApiRequest request
     ) {
@@ -142,7 +151,7 @@ public class ArtistController {
             .map(ArtistSearchPaginationApiParam::from)
             .toList();
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ArtistSearchPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)

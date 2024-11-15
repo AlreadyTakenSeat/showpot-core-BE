@@ -23,8 +23,10 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationApiResponse;
+import org.example.dto.response.SuccessResponse;
 import org.example.security.dto.AuthenticatedInfo;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,6 +46,7 @@ public class UserShowController {
 
     private final UserShowService userShowService;
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/interests")
     @Operation(
         summary = "공연 관심 등록",
@@ -50,7 +54,7 @@ public class UserShowController {
             @ApiResponse(responseCode = "204", description = "No Content")
         }
     )
-    public ResponseEntity<Void> interest(
+    public SuccessResponse<Void> interest(
         @PathVariable("showId") UUID showId,
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
@@ -60,9 +64,10 @@ public class UserShowController {
                 .userId(info.userId())
                 .build()
         );
-        return ResponseEntity.noContent().build();
+        return SuccessResponse.noContent();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/uninterested")
     @Operation(
         summary = "공연 관심 취소",
@@ -70,7 +75,7 @@ public class UserShowController {
             @ApiResponse(responseCode = "204", description = "No Content")
         }
     )
-    public ResponseEntity<Void> uninterested(
+    public SuccessResponse<Void> uninterested(
         @PathVariable("showId") UUID showId,
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
@@ -80,12 +85,13 @@ public class UserShowController {
                 .userId(info.userId())
                 .build()
         );
-        return ResponseEntity.noContent().build();
+        return SuccessResponse.noContent();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/interests")
     @Operation(summary = "관심 등록한 공연 목록 조회")
-    public ResponseEntity<PaginationApiResponse<InterestShowPaginationApiResponse>> getInterests(
+    public SuccessResponse<PaginationApiResponse<InterestShowPaginationApiResponse>> getInterests(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject ShowInterestPaginationApiRequest request
     ) {
@@ -104,7 +110,7 @@ public class UserShowController {
             )
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<InterestShowPaginationApiResponse>builder()
                 .data(response)
                 .hasNext(serviceResponse.hasNext())
@@ -113,18 +119,20 @@ public class UserShowController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/interests/count")
     @Operation(summary = "관심 공연 개수")
-    public ResponseEntity<NumberOfInterestShowApiResponse> getNumberOfInterestShow(
+    public SuccessResponse<NumberOfInterestShowApiResponse> getNumberOfInterestShow(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             NumberOfInterestShowApiResponse.from(
                 userShowService.countInterestShows(info.userId())
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/alert")
     @Operation(
         summary = "공연 티켓팅 알림 등록 / 취소",
@@ -133,7 +141,7 @@ public class UserShowController {
             @ApiResponse(responseCode = "204", description = "No Content")
         }
     )
-    public ResponseEntity<Void> alert(
+    public SuccessResponse<Void> alert(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable("showId") UUID showId,
         @RequestParam("ticketingApiType") TicketingApiType type,
@@ -143,12 +151,13 @@ public class UserShowController {
             ticketingAlertReservationRequest.toServiceRequest(info.userId(), showId, type)
         );
 
-        return ResponseEntity.noContent().build();
+        return SuccessResponse.noContent();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/alerts")
     @Operation(summary = "알림 설정한 공연 목록")
-    public ResponseEntity<PaginationApiResponse<ShowAlertPaginationApiParam>> getAlerts(
+    public SuccessResponse<PaginationApiResponse<ShowAlertPaginationApiParam>> getAlerts(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject ShowAlertPaginationApiRequest request
     ) {
@@ -167,7 +176,7 @@ public class UserShowController {
             )
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ShowAlertPaginationApiParam>builder()
                 .data(response)
                 .hasNext(alertShows.hasNext())
@@ -176,40 +185,43 @@ public class UserShowController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{showId}/alert/reservations")
     @Operation(summary = "티켓팅한 공연의 알림 예약 현황")
-    public ResponseEntity<TicketingAlertReservationApiResponse> getAlertsReservations(
+    public SuccessResponse<TicketingAlertReservationApiResponse> getAlertsReservations(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable("showId") UUID showId,
         @RequestParam("ticketingApiType") TicketingApiType type
     ) {
         var now = LocalDateTime.now();
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             TicketingAlertReservationApiResponse.from(
                 userShowService.findAlertsReservations(info.userId(), showId, type, now)
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/alerts/count")
     @Operation(summary = "알림 설정한 공연 개수")
-    public ResponseEntity<NumberOfTicketingAlertApiResponse> getNumberOfAlertShow(
+    public SuccessResponse<NumberOfTicketingAlertApiResponse> getNumberOfAlertShow(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
         LocalDateTime now = LocalDateTime.now();
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             NumberOfTicketingAlertApiResponse.from(
                 userShowService.countAlertShows(info.userId(), now)
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/terminated/ticketing/count")
     @Operation(summary = "티켓팅 알림 설정 후 공연이 종료된 개수")
-    public ResponseEntity<TerminatedTicketingShowCountApiResponse> getNumberOfTerminatedTicketingShowCount(
+    public SuccessResponse<TerminatedTicketingShowCountApiResponse> getNumberOfTerminatedTicketingShowCount(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             TerminatedTicketingShowCountApiResponse.from(
                 userShowService.countTerminatedTicketingShow(info.userId())
             )
