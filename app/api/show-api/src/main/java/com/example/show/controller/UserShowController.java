@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationApiResponse;
 import org.example.dto.response.SuccessResponse;
+import org.example.dto.response.SuccessResponse.Empty;
 import org.example.security.dto.AuthenticatedInfo;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -45,15 +46,14 @@ public class UserShowController {
 
     private final UserShowService userShowService;
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/interests")
     @Operation(
         summary = "공연 관심 등록",
         responses = {
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "200", description = "Empty Data")
         }
     )
-    public SuccessResponse<Void> interest(
+    public SuccessResponse<Empty> interest(
         @PathVariable("showId") UUID showId,
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
@@ -63,18 +63,17 @@ public class UserShowController {
                 .userId(info.userId())
                 .build()
         );
-        return SuccessResponse.noContent();
+        return SuccessResponse.emptyData();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/uninterested")
     @Operation(
         summary = "공연 관심 취소",
         responses = {
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "200", description = "Empty Data")
         }
     )
-    public SuccessResponse<Void> uninterested(
+    public SuccessResponse<Empty> uninterested(
         @PathVariable("showId") UUID showId,
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
@@ -84,7 +83,7 @@ public class UserShowController {
                 .userId(info.userId())
                 .build()
         );
-        return SuccessResponse.noContent();
+        return SuccessResponse.emptyData();
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -131,16 +130,15 @@ public class UserShowController {
         );
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/{showId}/alert")
     @Operation(
         summary = "공연 티켓팅 알림 등록 / 취소",
         description = "요청한 알람 시간으로 기존 내용을 덮어쓴다.",
         responses = {
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "200", description = "Empty Data")
         }
     )
-    public SuccessResponse<Void> alert(
+    public SuccessResponse<Empty> alert(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable("showId") UUID showId,
         @RequestParam("ticketingApiType") TicketingApiType type,
@@ -150,7 +148,7 @@ public class UserShowController {
             ticketingAlertReservationRequest.toServiceRequest(info.userId(), showId, type)
         );
 
-        return SuccessResponse.noContent();
+        return SuccessResponse.emptyData();
     }
 
     @ResponseStatus(HttpStatus.OK)

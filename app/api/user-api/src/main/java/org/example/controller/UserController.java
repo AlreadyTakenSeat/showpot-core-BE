@@ -10,6 +10,7 @@ import org.example.controller.dto.response.LoginApiResponse;
 import org.example.controller.dto.response.ReissueApiResponse;
 import org.example.controller.dto.response.UserProfileApiResponse;
 import org.example.dto.response.SuccessResponse;
+import org.example.dto.response.SuccessResponse.Empty;
 import org.example.security.dto.AuthenticatedInfo;
 import org.example.security.dto.TokenParam;
 import org.example.service.UserService;
@@ -42,34 +43,32 @@ public class UserController {
                 .build());
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/logout")
     @Operation(
         summary = "로그아웃",
         responses = {
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "200", description = "Empty Data")
         }
     )
-    public SuccessResponse<Void> logout(
+    public SuccessResponse<Empty> logout(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
         userService.logout(info.userId(), info.accessToken());
-        return SuccessResponse.noContent();
+        return SuccessResponse.emptyData();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/withdrawal")
     @Operation(
         summary = "회원탈퇴",
         responses = {
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "200", description = "Empty Data")
         }
     )
-    public SuccessResponse<Void> withdraw(
+    public SuccessResponse<Empty> withdraw(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
         userService.withdraw(info.userId(), info.accessToken());
-        return SuccessResponse.noContent();
+        return SuccessResponse.emptyData();
     }
 
     @ResponseStatus(HttpStatus.OK)
