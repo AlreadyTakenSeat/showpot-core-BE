@@ -2,28 +2,25 @@ package org.example.exception;
 
 public record ErrorResponse(
     int code,
-    String message,
-    ErrorResponseData data
+    String errorId,
+    String errorCode,
+    String message
 ) {
-    public ErrorResponse(String errorId, String errorCode, String message, int code) {
-        this(code, message, new ErrorResponseData(errorId, errorCode));
-    }
-
     private ErrorResponse(BusinessErrorResponseBuilder builder) {
         this(
+            builder.error.getHttpStatus(),
             builder.errorId,
             builder.error.getErrorCode(),
-            builder.error.getClientMessage(),
-            builder.error.getHttpStatus()
+            builder.error.getClientMessage()
         );
     }
 
     private ErrorResponse(MessageCustomErrorResponseBuilder builder) {
         this(
+            builder.error.getHttpStatus(),
             builder.errorId,
             builder.error.getErrorCode(),
-            builder.message,
-            builder.error.getHttpStatus()
+            builder.message
         );
     }
 
@@ -85,8 +82,5 @@ public record ErrorResponse(
         public ErrorResponse build() {
             return new ErrorResponse(this);
         }
-    }
-
-    private record ErrorResponseData(String errorId, String errorCode) {
     }
 }
