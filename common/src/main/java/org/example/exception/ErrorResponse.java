@@ -1,34 +1,26 @@
 package org.example.exception;
 
 public record ErrorResponse(
+    int code,
     String errorId,
     String errorCode,
-    String message,
-    int httpStatus
+    String message
 ) {
-
-    public ErrorResponse(String errorId, String errorCode, String message, int httpStatus) {
-        this.errorId = errorId;
-        this.errorCode = errorCode;
-        this.message = message;
-        this.httpStatus = httpStatus;
-    }
-
     private ErrorResponse(BusinessErrorResponseBuilder builder) {
         this(
+            builder.error.getHttpStatus(),
             builder.errorId,
             builder.error.getErrorCode(),
-            builder.error.getClientMessage(),
-            builder.error.getHttpStatus()
+            builder.error.getClientMessage()
         );
     }
 
     private ErrorResponse(MessageCustomErrorResponseBuilder builder) {
         this(
+            builder.error.getHttpStatus(),
             builder.errorId,
             builder.error.getErrorCode(),
-            builder.message,
-            builder.error.getHttpStatus()
+            builder.message
         );
     }
 

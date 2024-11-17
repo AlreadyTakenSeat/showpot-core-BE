@@ -14,15 +14,17 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationApiResponse;
+import org.example.dto.response.SuccessResponse;
 import org.example.security.dto.AuthenticatedInfo;
 import org.example.util.ValidatorUser;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,9 +35,10 @@ public class ShowController {
 
     private final ShowService showService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "공연 목록 조회")
-    public ResponseEntity<PaginationApiResponse<ShowPaginationApiParam>> getShows(
+    public SuccessResponse<PaginationApiResponse<ShowPaginationApiParam>> getShows(
         @Valid @ParameterObject ShowPaginationApiRequest request
     ) {
         var response = showService.findShows(request.toServiceRequest());
@@ -47,7 +50,7 @@ public class ShowController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ShowPaginationApiParam>builder()
                 .data(data)
                 .hasNext(response.hasNext())
@@ -56,23 +59,25 @@ public class ShowController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{showId}")
     @Operation(summary = "공연 상세 조회")
-    public ResponseEntity<ShowDetailApiResponse> getShow(
+    public SuccessResponse<ShowDetailApiResponse> getShow(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable("showId") UUID showId,
         @RequestHeader(value = "Device-Token") String deviceToken
     ) {
         UUID userId = ValidatorUser.getUserId(info);
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             ShowDetailApiResponse.from(showService.getShow(userId, showId, deviceToken))
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/search")
     @Operation(summary = "검색하기")
-    public ResponseEntity<PaginationApiResponse<ShowSearchPaginationApiParam>> search(
+    public SuccessResponse<PaginationApiResponse<ShowSearchPaginationApiParam>> search(
         @Valid @ParameterObject ShowSearchPaginationApiRequest request
     ) {
         var response = showService.searchShow(request.toServiceRequest());
@@ -84,7 +89,7 @@ public class ShowController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<ShowSearchPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)

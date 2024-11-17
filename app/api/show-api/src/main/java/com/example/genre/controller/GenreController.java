@@ -20,15 +20,17 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationApiResponse;
+import org.example.dto.response.SuccessResponse;
 import org.example.security.dto.AuthenticatedInfo;
 import org.example.util.ValidatorUser;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,9 +41,10 @@ public class GenreController {
 
     private final GenreService genreService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "장르 전체 목록 조회")
-    public ResponseEntity<PaginationApiResponse<GenrePaginationApiParam>> getGenres(
+    public SuccessResponse<PaginationApiResponse<GenrePaginationApiParam>> getGenres(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject GenrePaginationApiRequest request
     ) {
@@ -55,7 +58,7 @@ public class GenreController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<GenrePaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)
@@ -64,9 +67,10 @@ public class GenreController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/unsubscriptions")
     @Operation(summary = "구독하지 않은 장르 목록 조회")
-    public ResponseEntity<PaginationApiResponse<GenreUnsubscriptionPaginationApiParam>> getUnsubscribedGenres(
+    public SuccessResponse<PaginationApiResponse<GenreUnsubscriptionPaginationApiParam>> getUnsubscribedGenres(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject GenreUnsubscriptionPaginationApiRequest request
     ) {
@@ -81,7 +85,7 @@ public class GenreController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<GenreUnsubscriptionPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)
@@ -90,9 +94,10 @@ public class GenreController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/subscriptions")
     @Operation(summary = "구독한 장르 목록 조회")
-    public ResponseEntity<PaginationApiResponse<GenreSubscriptionPaginationApiParam>> getSubscribedGenres(
+    public SuccessResponse<PaginationApiResponse<GenreSubscriptionPaginationApiParam>> getSubscribedGenres(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @ParameterObject GenreSubscriptionPaginationApiRequest request
     ) {
@@ -107,7 +112,7 @@ public class GenreController {
             .map(element -> CursorApiResponse.toCursorId(element.id()))
             .orElse(CursorApiResponse.noneCursor());
 
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             PaginationApiResponse.<GenreSubscriptionPaginationApiParam>builder()
                 .hasNext(response.hasNext())
                 .data(data)
@@ -116,38 +121,41 @@ public class GenreController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/subscriptions/count")
     @Operation(summary = "구독한 장르 수")
-    public ResponseEntity<NumberOfSubscribedGenreApiResponse> getNumberOfSubscribedGenre(
+    public SuccessResponse<NumberOfSubscribedGenreApiResponse> getNumberOfSubscribedGenre(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             NumberOfSubscribedGenreApiResponse.from(
                 genreService.countSubscribedGenres(info.userId())
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/subscribe")
     @Operation(summary = "구독하기")
-    public ResponseEntity<GenreSubscriptionApiResponse> subscribe(
+    public SuccessResponse<GenreSubscriptionApiResponse> subscribe(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @RequestBody GenreSubscriptionApiRequest request
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             GenreSubscriptionApiResponse.from(
                 genreService.subscribe(request.toServiceRequest(info.userId()))
             )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/unsubscribe")
     @Operation(summary = "구독 취소하기")
-    public ResponseEntity<GenreUnsubscriptionApiResponse> unsubscribe(
+    public SuccessResponse<GenreUnsubscriptionApiResponse> unsubscribe(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @Valid @RequestBody GenreUnsubscriptionApiRequest request
     ) {
-        return ResponseEntity.ok(
+        return SuccessResponse.ok(
             GenreUnsubscriptionApiResponse.from(
                 genreService.unsubscribe(request.toServiceRequest(info.userId()))
             )

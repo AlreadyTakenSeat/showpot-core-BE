@@ -30,3 +30,7 @@ token:
 
 alarm:
   api-url: http://localhost:8081/api/v1
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true

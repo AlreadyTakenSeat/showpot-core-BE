@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
         log.error(errorId, e);
 
-        return ResponseEntity.status(response.httpStatus())
+        return ResponseEntity.status(response.code())
             .body(response);
     }
 
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
 
         log.error(errorId, e);
 
-        return ResponseEntity.status(response.httpStatus())
+        return ResponseEntity.status(response.code())
             .body(response);
     }
 
