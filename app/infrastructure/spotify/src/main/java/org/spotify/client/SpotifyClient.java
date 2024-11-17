@@ -14,7 +14,7 @@ import org.spotify.property.SpotifyProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 @Component
 @RequiredArgsConstructor
@@ -22,9 +22,10 @@ import org.springframework.web.client.RestClient;
 public class SpotifyClient {
 
     private final SpotifyProperty spotifyProperty;
+    private final Builder restClientBuilder;
 
     public String requestAccessToken() {
-        ResponseEntity<SpotifyAccessTokenResponse> result = RestClient.builder()
+        ResponseEntity<SpotifyAccessTokenResponse> result = restClientBuilder
             .baseUrl(spotifyProperty.tokenApiURL())
             .build()
             .post()
@@ -49,7 +50,7 @@ public class SpotifyClient {
     }
 
     public SpotifySearchResponse searchArtist(ArtistSearchSpotifyRequest request) {
-        ResponseEntity<SpotifySearchResponse> result = RestClient.builder()
+        ResponseEntity<SpotifySearchResponse> result = restClientBuilder
             .defaultHeader("Authorization", "Bearer " + request.accessToken())
             .baseUrl(spotifyProperty.apiURL() + "/search?" + request.toQueryParameter())
             .build()
@@ -69,7 +70,7 @@ public class SpotifyClient {
     }
 
     public SpotifyArtistsResponse findArtistsBySpotifyArtistId(ArtistsSpotifyRequest request) {
-        ResponseEntity<SpotifyArtistsResponse> result = RestClient.builder()
+        ResponseEntity<SpotifyArtistsResponse> result = restClientBuilder
             .defaultHeader("Authorization", "Bearer " + request.accessToken())
             .baseUrl(spotifyProperty.apiURL() + "/artists?" + request.toQueryParameter())
             .build()
