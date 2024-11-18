@@ -46,6 +46,7 @@ public class UserShowController {
 
     private final UserShowService userShowService;
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{showId}/interests")
     @Operation(
         summary = "공연 관심 등록",
@@ -66,6 +67,7 @@ public class UserShowController {
         return SuccessResponse.emptyData();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{showId}/uninterested")
     @Operation(
         summary = "공연 관심 취소",
@@ -130,6 +132,7 @@ public class UserShowController {
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{showId}/alert")
     @Operation(
         summary = "공연 티켓팅 알림 등록 / 취소",

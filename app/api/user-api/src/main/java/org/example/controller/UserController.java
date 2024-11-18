@@ -43,6 +43,7 @@ public class UserController {
                 .build());
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/logout")
     @Operation(
         summary = "로그아웃",
@@ -57,6 +58,7 @@ public class UserController {
         return SuccessResponse.emptyData();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/withdrawal")
     @Operation(
         summary = "회원탈퇴",
