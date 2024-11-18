@@ -29,3 +29,7 @@ token:
 
 alarm:
   api-url: ${ALARM_SERVER_API_URL}
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
