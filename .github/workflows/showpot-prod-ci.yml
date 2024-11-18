@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - prod
-  push:
-    branches:
-      - feat/prod-cicd
 
 jobs:
   build:
