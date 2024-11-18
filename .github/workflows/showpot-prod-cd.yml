@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - prod
+      - feat/prod-cicd
 
 env:
-  AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: showpot
 
 jobs:
@@ -48,6 +48,7 @@ jobs:
           spring.datasource.password: ${{ secrets.APPLICATION_DATASOURCE_PASSWORD_PROD }}
           spotify.client-id: ${{ secrets.SPOTIFY_CLIENT_ID }}
           spotify.client-secret: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          alarm.api-url: ${{ secrets.ALARM_SERVER_API_URL_PROD }}
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -Dspring.profiles.active=prod
@@ -57,7 +58,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Set image tag
         id: set-tag
