@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - prod
+  push:
+    branches:
+      - feat/prod-cicd
 
 jobs:
   build:
@@ -38,8 +41,10 @@ jobs:
           cloud.aws.region: ${{ secrets.AWS_REGION }}
           cloud.aws.s3.bucket: ${{ secrets.AWS_BUCKET }}
           spring.datasource.url: ${{ secrets.APPLICATION_DATASOURCE_URL_PROD }}
-          spring.datasource.username: ${{ secrets.APPLICATION_DATASOURCE_USERNAME }}
-          spring.datasource.password: ${{ secrets.APPLICATION_DATASOURCE_PASSWORD }}
+          spring.datasource.username: ${{ secrets.APPLICATION_DATASOURCE_USERNAME_PROD }}
+          spring.datasource.password: ${{ secrets.APPLICATION_DATASOURCE_PASSWORD_PROD }}
+          spring.data.redis.host: ${{ secrets.REDIS_HOST_PROD }}
+          spring.data.redis.port: ${{ secrets.REDIS_PORT_PROD }}
           spotify.client-id: ${{ secrets.SPOTIFY_CLIENT_ID }}
           spotify.client-secret: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
@@ -50,7 +55,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         if: success()
         with:
-          title: ✅ Backend CI success ✅
+          title: ✅ showpot-core-BE 운영 서버 CI 프로세스가 완료되었습니다! ✅
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: "<@1084774841460215839> <@281597829636423682> ShoPot 이슈 혹은 PR을 확인해주세요!"
           color: 00FF00
@@ -61,7 +66,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         if: failure()
         with:
-          title: ❗️Backend CI failed ❗️
+          title: ❗️showpot-core-BE 운영 서버 CI 프로세스가 실패했습니다! ❗️
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           color: FF0000
           username: showPot-Bot
