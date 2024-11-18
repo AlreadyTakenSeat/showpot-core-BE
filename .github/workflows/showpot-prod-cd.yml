@@ -34,7 +34,7 @@ jobs:
           files: | 
             ./app/src/main/resources/application-prod.yml, 
             ./app/src/main/resources/application-cloud-prod.yml, 
-            ./app/domain/common-domain/src/main/resources/application-domain-prod.yml
+            ./app/domain/common-domain/src/main/resources/application-domain-prod.yml,
             ./app/infrastructure/spotify/src/main/resources/application-spotify-prod.yml
         env:
           token.secret-key: ${{ secrets.TOKEN_SECRET_KEY }}
