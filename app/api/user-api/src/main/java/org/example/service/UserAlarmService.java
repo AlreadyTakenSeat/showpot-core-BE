@@ -16,7 +16,7 @@ import org.example.service.dto.response.NotificationServiceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 @Slf4j
 @Service
@@ -24,15 +24,16 @@ import org.springframework.web.client.RestClient;
 public class UserAlarmService {
 
     private final UserRepository userRepository;
-    private final AlarmServerProperty alarmServerProperty;
     private final ShowRepository showRepository;
+    private final AlarmServerProperty alarmServerProperty;
+    private final Builder restClientBuilder;
 
     public NotificationExistServiceResponse getNotificationExist(UUID userId) {
         String userFcmToken = findUserFcmTokenById(userId);
 
         log.info("{}/show-alarm/checked?fcmToken={}", alarmServerProperty.apiURL(), userFcmToken);
 
-        ResponseEntity<NotificationExistServiceResponse> result = RestClient.builder()
+        ResponseEntity<NotificationExistServiceResponse> result = restClientBuilder
             .baseUrl(alarmServerProperty.apiURL() + "/show-alarm/checked")
             .build()
             .get()
@@ -47,7 +48,7 @@ public class UserAlarmService {
     public NotificationServiceResponse findNotifications(UUID userId, UUID cursorId, int size) {
         String userFcmToken = findUserFcmTokenById(userId);
 
-        ResponseEntity<NotificationPaginationResponse> result = RestClient.builder()
+        ResponseEntity<NotificationPaginationResponse> result = restClientBuilder
             .baseUrl(createNotificationsUrl(userFcmToken, cursorId, size))
             .build()
             .post()
