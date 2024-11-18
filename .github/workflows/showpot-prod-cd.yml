@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - prod
+      - feat/prod-cicd
 
 env:
   AWS_REGION: ap-northeast-2
