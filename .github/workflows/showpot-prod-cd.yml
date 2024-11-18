@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: showpot-application
+  ECR_REPOSITORY: showpot
 
 jobs:
   build-and-deploy:
@@ -81,21 +81,50 @@ jobs:
           IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-      - name: Update ECS task definition
-        id: update-task
-        run: |
-          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition showpot-core --region $AWS_REGION)
-          NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE_URI "$IMAGE_URI" '
-            .taskDefinition | 
-            .containerDefinitions[0].image=$IMAGE_URI | 
-            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
-          echo $NEW_TASK_DEFINITION > new-task-def.json
-          REGISTERED_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json)
-          TASK_REVISION=$(echo $REGISTERED_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')
-          
-          echo "Registered new task definition revision: $TASK_REVISION"
-          echo "TASK_REVISION=$TASK_REVISION" >> $GITHUB_ENV
+      - name: Get Github Actions IP
+        id: ip
+        uses: candidob/get-runner-ip@v1.0.0
 
-      - name: Deploy to ECS service
+      - name: Add Github Actions IP on Security Group
         run: |
-          aws ecs update-service --cluster showpot-cluster --service showpot-core-service --task-definition $TASK_REVISION --force-new-deployment --region $AWS_REGION
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_PROD_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Connect ec2 and Run Docker Container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_PROD_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_PROD_SSH_PRIVATE_KEY }}
+          script: |
+            docker ps -q --filter "name=core" | xargs -r docker stop
+            docker ps -aq --filter "name=core" | xargs -r docker rm
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_USER_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            docker system prune -f --volumes
+            docker pull ${{ env.IMAGE_URI }}
+            docker run -d --name core -p 8080:8080 -e ENVIRONMENT=prod --network prod-network ${{ env.IMAGE_URI }}
+
+      - name: Remove Github Actions IP from Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_PROD_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Backend CD for Dev Server Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          title: ✅ showpot-core-BE 운용 서버 배포 프로세스가 완료되었습니다! ✅
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: "<@1084774841460215839> <@749533823057920030> 배포가 정상적으로 이뤄졌는지 확인해주세요!"
+          color: 00FF00
+          username: showPot-Bot
+          avatar_url: ${{ secrets.DISCORD_NOTIFICATION_SUCCESS_AVATAR_URL }}
+
+      - name: Backend CD for Dev Server Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          title: ❗️showpot-core-BE 운용 서버 배포 프로세스가 실패했습니다! ❗️
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          color: FF0000
+          username: showPot-Bot
+          avatar_url: ${{ secrets.DISCORD_NOTIFICATION_FAILED_AVATAR_URL }}
