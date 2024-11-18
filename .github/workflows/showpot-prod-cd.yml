@@ -45,8 +45,8 @@ jobs:
           spring.data.redis.host: ${{ secrets.REDIS_HOST_PROD }}
           spring.data.redis.port: ${{ secrets.REDIS_PORT_PROD }}
           spring.datasource.url: ${{ secrets.APPLICATION_DATASOURCE_URL_PROD }}
-          spring.datasource.username: ${{ secrets.APPLICATION_DATASOURCE_USERNAME }}
-          spring.datasource.password: ${{ secrets.APPLICATION_DATASOURCE_PASSWORD }}
+          spring.datasource.username: ${{ secrets.APPLICATION_DATASOURCE_USERNAME_PROD }}
+          spring.datasource.password: ${{ secrets.APPLICATION_DATASOURCE_PASSWORD_PROD }}
           spotify.client-id: ${{ secrets.SPOTIFY_CLIENT_ID }}
           spotify.client-secret: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
