@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - prod
-      - feat/prod-cicd
+      - feat/security
 
 env:
   ECR_REPOSITORY: showpot
