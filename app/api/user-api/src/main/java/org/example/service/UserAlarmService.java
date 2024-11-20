@@ -16,7 +16,7 @@ import org.example.service.dto.response.NotificationServiceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient.Builder;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Service
@@ -26,20 +26,18 @@ public class UserAlarmService {
     private final UserRepository userRepository;
     private final ShowRepository showRepository;
     private final AlarmServerProperty alarmServerProperty;
-    private final Builder restClientBuilder;
 
     public NotificationExistServiceResponse getNotificationExist(UUID userId) {
         String userFcmToken = findUserFcmTokenById(userId);
 
         log.info("{}/show-alarm/checked?fcmToken={}", alarmServerProperty.apiURL(), userFcmToken);
 
-        ResponseEntity<NotificationExistServiceResponse> result = restClientBuilder
-            .baseUrl(alarmServerProperty.apiURL() + "/show-alarm/checked")
-            .build()
-            .get()
-            .uri("?fcmToken=" + userFcmToken)
-            .retrieve()
-            .toEntity(NotificationExistServiceResponse.class);
+        ResponseEntity<NotificationExistServiceResponse> result =
+                RestClient.create(alarmServerProperty.apiURL() + "/show-alarm/checked")
+                        .get()
+                        .uri("?fcmToken=" + userFcmToken)
+                        .retrieve()
+                        .toEntity(NotificationExistServiceResponse.class);
 
         handleApiError(result, "getNotificationExist");
         return result.getBody();
@@ -48,9 +46,8 @@ public class UserAlarmService {
     public NotificationServiceResponse findNotifications(UUID userId, UUID cursorId, int size) {
         String userFcmToken = findUserFcmTokenById(userId);
 
-        ResponseEntity<NotificationPaginationResponse> result = restClientBuilder
-            .baseUrl(createNotificationsUrl(userFcmToken, cursorId, size))
-            .build()
+        ResponseEntity<NotificationPaginationResponse> result =
+            RestClient.create(createNotificationsUrl(userFcmToken, cursorId, size))
             .post()
             .retrieve()
             .toEntity(NotificationPaginationResponse.class);

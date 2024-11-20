@@ -14,7 +14,7 @@ import org.spotify.property.SpotifyProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient.Builder;
+import org.springframework.web.client.RestClient;
 
 @Component
 @RequiredArgsConstructor
@@ -22,12 +22,9 @@ import org.springframework.web.client.RestClient.Builder;
 public class SpotifyClient {
 
     private final SpotifyProperty spotifyProperty;
-    private final Builder restClientBuilder;
 
     public String requestAccessToken() {
-        ResponseEntity<SpotifyAccessTokenResponse> result = restClientBuilder
-            .baseUrl(spotifyProperty.tokenApiURL())
-            .build()
+        ResponseEntity<SpotifyAccessTokenResponse> result = RestClient.create(spotifyProperty.tokenApiURL())
             .post()
             .contentType(APPLICATION_FORM_URLENCODED)
             .body(
@@ -50,11 +47,10 @@ public class SpotifyClient {
     }
 
     public SpotifySearchResponse searchArtist(ArtistSearchSpotifyRequest request) {
-        ResponseEntity<SpotifySearchResponse> result = restClientBuilder
-            .defaultHeader("Authorization", "Bearer " + request.accessToken())
-            .baseUrl(spotifyProperty.apiURL() + "/search?" + request.toQueryParameter())
-            .build()
+        ResponseEntity<SpotifySearchResponse> result =
+            RestClient.create(spotifyProperty.apiURL() + "/search?" + request.toQueryParameter())
             .get()
+            .header("Authorization", "Bearer " + request.accessToken())
             .retrieve()
             .toEntity(SpotifySearchResponse.class);
 
@@ -70,11 +66,10 @@ public class SpotifyClient {
     }
 
     public SpotifyArtistsResponse findArtistsBySpotifyArtistId(ArtistsSpotifyRequest request) {
-        ResponseEntity<SpotifyArtistsResponse> result = restClientBuilder
-            .defaultHeader("Authorization", "Bearer " + request.accessToken())
-            .baseUrl(spotifyProperty.apiURL() + "/artists?" + request.toQueryParameter())
-            .build()
+        ResponseEntity<SpotifyArtistsResponse> result =
+            RestClient.create(spotifyProperty.apiURL() + "/artists?" + request.toQueryParameter())
             .get()
+            .header("Authorization", "Bearer " + request.accessToken())
             .retrieve()
             .toEntity(SpotifyArtistsResponse.class);
 
