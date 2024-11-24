@@ -10,10 +10,12 @@ import com.example.component.ViewCountComponent;
 import com.example.show.service.ShowService;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
+import org.example.dto.viewcount.ShowViewCountEvent;
 import org.example.usecase.InterestShowUseCase;
 import org.example.usecase.ShowUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 import show.fixture.dto.ShowRequestDtoFixture;
 import show.fixture.dto.ShowResponseDtoFixture;
 
@@ -22,14 +24,16 @@ class ShowServiceTest {
     private final ShowUseCase showUseCase = mock(ShowUseCase.class);
     private final InterestShowUseCase interestShowUseCase = mock(InterestShowUseCase.class);
     private final ViewCountComponent viewCountComponent = mock(ViewCountComponent.class);
+    private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
     private final ShowService showService = new ShowService(
         showUseCase,
         interestShowUseCase,
-        viewCountComponent
+        viewCountComponent,
+        applicationEventPublisher
     );
 
     @Test
-    @DisplayName("공연 상세 조회할 때 조회수를 올리고 데이터를 반환한다.")
+    @DisplayName("공연 상세 조회할 때 조회수 이벤트를 발행하고 데이터를 반환한다.")
     void showDetailWithUpViewCount() {
         //given
         UUID userId = UUID.randomUUID();
@@ -49,12 +53,12 @@ class ShowServiceTest {
         var result = showService.getShow(userId, showId, viewIdentifier);
 
         //then
-        verify(showUseCase, times(1)).view(showId);
+        verify(applicationEventPublisher, times(1)).publishEvent(new ShowViewCountEvent(showId));
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("공연 상세 조회할 때 조회수를 올리지 않고 데이터를 반환한다.")
+    @DisplayName("공연 상세 조회할 때 조회수 이벤트를 발행하지 않고 데이터를 반환한다.")
     void showDetailNoneUpViewCount() {
         //given
         UUID userId = UUID.randomUUID();
@@ -74,7 +78,7 @@ class ShowServiceTest {
         var result = showService.getShow(userId, showId, viewIdentifier);
 
         //then
-        verify(showUseCase, times(0)).view(showId);
+        verify(applicationEventPublisher, times(0)).publishEvent(new ShowViewCountEvent(showId));
         assertThat(result).isNotNull();
     }
 

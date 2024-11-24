@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +54,9 @@ public class Show extends BaseEntity {
 
     @Enumerated
     private TicketingSites ticketingSites;
+
+    @Version
+    private Long version;
 
     @Builder
     private Show(

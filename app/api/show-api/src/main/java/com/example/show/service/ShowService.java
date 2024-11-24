@@ -12,8 +12,10 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.response.PaginationServiceResponse;
 import org.example.dto.show.response.ShowDetailDomainResponse;
+import org.example.dto.viewcount.ShowViewCountEvent;
 import org.example.usecase.InterestShowUseCase;
 import org.example.usecase.ShowUseCase;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +25,7 @@ public class ShowService {
     private final ShowUseCase showUseCase;
     private final InterestShowUseCase interestShowUseCase;
     private final ViewCountComponent viewCountComponent;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ShowDetailServiceResponse getShow(UUID userId, UUID showId, String deviceToken) {
         ShowDetailDomainResponse showDetail = showUseCase.findShowDetail(showId);
@@ -31,7 +34,7 @@ public class ShowService {
             userId != null && interestShowUseCase.findInterestShow(showId, userId).isPresent();
 
         if (viewCountComponent.validateViewCount(showId, deviceToken)) {
-            showUseCase.view(showId);
+            applicationEventPublisher.publishEvent(new ShowViewCountEvent(showId));
         }
 
         return ShowDetailServiceResponse.from(showDetail, isInterested);

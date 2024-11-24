@@ -15,7 +15,7 @@ public class RedisViewCountComponent implements ViewCountComponent {
 
     @Override
     public boolean validateViewCount(UUID showId, String deviceToken) {
-        String viewStatus = stringRedisTemplate.opsForValue().get("VC:" + deviceToken + showId);
+        String viewStatus = stringRedisTemplate.opsForValue().get("VC:" + deviceToken + ":" + showId);
 
         if (viewStatus == null) {
             stringRedisTemplate.opsForValue()

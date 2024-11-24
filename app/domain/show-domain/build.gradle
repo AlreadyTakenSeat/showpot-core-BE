@@ -9,6 +9,7 @@ dependencies {
 
     // hypersistence utils
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.6'
+    implementation 'org.springframework.retry:spring-retry'
     //testFixtures
     testFixturesImplementation project(":app:domain:common-domain")
     testFixturesImplementation 'org.springframework.data:spring-data-jpa'
