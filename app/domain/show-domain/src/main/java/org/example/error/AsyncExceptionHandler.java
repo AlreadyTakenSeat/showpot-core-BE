@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class GlobalAsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
+public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
     @Override
     public void handleUncaughtException(Throwable e, Method method, Object... params) {

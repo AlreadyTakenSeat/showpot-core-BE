@@ -1,7 +1,7 @@
 package org.example.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.error.GlobalAsyncExceptionHandler;
+import org.example.error.AsyncExceptionHandler;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 public class ThreadPoolConfig implements AsyncConfigurer {
 
-    private final GlobalAsyncExceptionHandler globalAsyncExceptionHandler;
+    private final AsyncExceptionHandler asyncExceptionHandler;
 
     @Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
     public ApplicationEventMulticaster applicationEventMulticaster() {
@@ -37,6 +37,6 @@ public class ThreadPoolConfig implements AsyncConfigurer {
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return globalAsyncExceptionHandler;
+        return asyncExceptionHandler;
     }
 }
