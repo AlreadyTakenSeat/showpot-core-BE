@@ -8,6 +8,7 @@ import com.example.artist.service.dto.request.ArtistSubscriptionPaginationServic
 import com.example.artist.service.dto.request.ArtistSubscriptionServiceRequest;
 import com.example.artist.service.dto.request.ArtistUnsubscriptionPaginationServiceRequest;
 import com.example.artist.service.dto.request.ArtistUnsubscriptionServiceRequest;
+import com.example.artist.service.dto.response.ArtistIdsServiceResponse;
 import com.example.artist.service.dto.response.ArtistSubscriptionServiceResponse;
 import com.example.artist.service.dto.response.ArtistUnsubscriptionServiceResponse;
 import com.example.artist.service.dto.response.NumberOfSubscribedArtistServiceResponse;
@@ -91,9 +92,10 @@ public class ArtistService {
         );
 
         return ArtistSubscriptionServiceResponse.builder()
-            .successSubscriptionArtistIds(
-                subscribedArtistMessage.stream()
-                    .map(ArtistServiceMessage::id)
+            .subscriptionArtistIds(
+                requestArtist.stream()
+                    .filter(artist -> subscribedArtistIds.contains(artist.getId()))
+                    .map(ArtistIdsServiceResponse::from)
                     .toList()
             ).build();
     }
