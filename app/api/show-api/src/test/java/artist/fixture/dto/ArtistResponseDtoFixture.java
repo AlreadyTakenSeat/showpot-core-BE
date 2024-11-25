@@ -39,7 +39,10 @@ public class ArtistResponseDtoFixture {
             .toList();
     }
 
-    public static ArtistSearchPaginationDomainResponse artistSearchPaginationDomainResponse(int limit, boolean hasNext) {
+    public static ArtistSearchPaginationDomainResponse artistSearchPaginationDomainResponse(
+        int limit,
+        boolean hasNext
+    ) {
         return ArtistSearchPaginationDomainResponse.builder()
             .data(artistSearchSimpleDomainResponses(limit))
             .limit(limit)
@@ -49,7 +52,9 @@ public class ArtistResponseDtoFixture {
 
     }
 
-    public static List<ArtistSearchSimpleDomainResponse> artistSearchSimpleDomainResponses(int size) {
+    public static List<ArtistSearchSimpleDomainResponse> artistSearchSimpleDomainResponses(
+        int size
+    ) {
         return IntStream.range(0, size)
             .mapToObj(i -> ArtistSearchSimpleDomainResponse.builder()
                 .id(UUID.randomUUID())
