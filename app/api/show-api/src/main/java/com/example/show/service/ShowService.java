@@ -34,7 +34,7 @@ public class ShowService {
             userId != null && interestShowUseCase.findInterestShow(showId, userId).isPresent();
 
         if (viewCountComponent.validateViewCount(showId, deviceToken)) {
-            applicationEventPublisher.publishEvent(new ShowViewCountEvent(showId));
+            applicationEventPublisher.publishEvent(ShowViewCountEvent.from(showId));
         }
 
         return ShowDetailServiceResponse.from(showDetail, isInterested);
