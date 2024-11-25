@@ -3,6 +3,7 @@ package artist.fixture.dto;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.example.dto.artist.response.ArtistPaginationDomainResponse;
 import org.example.dto.artist.response.ArtistSearchPaginationDomainResponse;
 import org.example.dto.artist.response.ArtistSearchSimpleDomainResponse;
@@ -55,14 +56,12 @@ public class ArtistResponseDtoFixture {
     public static List<ArtistSearchSimpleDomainResponse> artistSearchSimpleDomainResponses(
         int size
     ) {
-        return IntStream.range(0, size)
-            .mapToObj(i -> ArtistSearchSimpleDomainResponse.builder()
+        return Stream.generate(() -> ArtistSearchSimpleDomainResponse.builder()
                 .id(UUID.randomUUID())
-                .name(i + "name")
-                .image(i + "testImage")
-                .name(i + "name")
-                .build()
-            )
+                .name("name")
+                .image("testImage")
+                .build())
+            .limit(size)
             .toList();
     }
 }
