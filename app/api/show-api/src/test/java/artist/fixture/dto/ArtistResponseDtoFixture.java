@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import org.example.dto.artist.response.ArtistPaginationDomainResponse;
+import org.example.dto.artist.response.ArtistSearchPaginationDomainResponse;
+import org.example.dto.artist.response.ArtistSearchSimpleDomainResponse;
 import org.example.dto.artist.response.ArtistSimpleDomainResponse;
 
 public class ArtistResponseDtoFixture {
@@ -34,6 +36,28 @@ public class ArtistResponseDtoFixture {
                 .name(i + "name")
                 .image(i + "testImage")
                 .build())
+            .toList();
+    }
+
+    public static ArtistSearchPaginationDomainResponse artistSearchPaginationDomainResponse(int limit, boolean hasNext) {
+        return ArtistSearchPaginationDomainResponse.builder()
+            .data(artistSearchSimpleDomainResponses(limit))
+            .limit(limit)
+            .offset(0)
+            .hasNext(hasNext)
+            .build();
+
+    }
+
+    public static List<ArtistSearchSimpleDomainResponse> artistSearchSimpleDomainResponses(int size) {
+        return IntStream.range(0, size)
+            .mapToObj(i -> ArtistSearchSimpleDomainResponse.builder()
+                .id(UUID.randomUUID())
+                .name(i + "name")
+                .image(i + "testImage")
+                .name(i + "name")
+                .build()
+            )
             .toList();
     }
 }
