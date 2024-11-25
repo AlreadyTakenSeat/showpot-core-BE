@@ -25,7 +25,6 @@ import org.example.fixture.domain.ArtistSubscriptionFixture;
 import org.example.usecase.ArtistSubscriptionUseCase;
 import org.example.usecase.ArtistUseCase;
 import org.example.usecase.UserUseCase;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -56,9 +55,9 @@ class ArtistServiceTest {
         given(
             artistUseCase.searchArtist(request.toDomainRequest())
         )
-        .willReturn(
-            ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(size, hasNext)
-        );
+            .willReturn(
+                ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(size, hasNext)
+            );
 
         //when
         var result = artistService.searchArtist(request);
@@ -82,9 +81,9 @@ class ArtistServiceTest {
         given(
             artistUseCase.searchArtist(request.toDomainRequest())
         )
-        .willReturn(
-            ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(0, false)
-        );
+            .willReturn(
+                ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(0, false)
+            );
 
         //when
         var result = artistService.searchArtist(request);
