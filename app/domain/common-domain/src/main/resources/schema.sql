@@ -115,6 +115,7 @@ create table show
     view_count        int          not null,
     seat_prices       jsonb        not null,
     ticketing_sites   jsonb        not null,
+    version           bigint       not null,
     primary key (id)
 );
 

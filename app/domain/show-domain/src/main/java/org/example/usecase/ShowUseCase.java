@@ -1,10 +1,12 @@
 package org.example.usecase;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.show.request.ShowAlertPaginationDomainRequest;
 import org.example.dto.show.request.ShowPaginationDomainRequest;
 import org.example.dto.show.request.ShowSearchPaginationDomainRequest;
@@ -19,8 +21,8 @@ import org.example.repository.show.showsearch.ShowSearchRepository;
 import org.example.repository.show.showticketing.ShowTicketingTimeRepository;
 import org.example.vo.TicketingType;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ShowUseCase {
@@ -43,7 +45,11 @@ public class ShowUseCase {
 
     @Transactional
     public void view(UUID id) {
-        findShowOrThrowNoSuchElementException(id).view();
+        findShowWithLockOrThrowNoSuchElementException(id).view();
+    }
+
+    private Show findShowWithLockOrThrowNoSuchElementException(UUID id) {
+        return showRepository.findByIdAndIsDeletedWithLock(id).orElseThrow(NoSuchElementException::new);
     }
 
     public ShowSearchPaginationDomainResponse searchShow(
