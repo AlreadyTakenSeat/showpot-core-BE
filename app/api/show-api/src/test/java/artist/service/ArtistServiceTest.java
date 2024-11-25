@@ -25,7 +25,6 @@ import org.example.fixture.domain.ArtistSubscriptionFixture;
 import org.example.usecase.ArtistSubscriptionUseCase;
 import org.example.usecase.ArtistUseCase;
 import org.example.usecase.UserUseCase;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +44,6 @@ class ArtistServiceTest {
         messagePublisher
     );
 
-    @Disabled
     @Test
     @DisplayName("페이지네이션을 이용해 아티스트를 검색할 수 있다.")
     void artistSearchWithPagination() {
@@ -54,6 +52,12 @@ class ArtistServiceTest {
         int size = 3;
         boolean hasNext = true;
         var request = ArtistRequestDtoFixture.artistSearchPaginationServiceRequest(size, search);
+        given(
+            artistUseCase.searchArtist(request.toDomainRequest())
+        )
+            .willReturn(
+                ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(size, hasNext)
+            );
 
         //when
         var result = artistService.searchArtist(request);
@@ -67,7 +71,6 @@ class ArtistServiceTest {
         );
     }
 
-    @Disabled
     @Test
     @DisplayName("아티스트 검색 결과가 없으면 빈 리스트를 반환한다.")
     void artistSearchEmptyResultWithPagination() {
@@ -75,6 +78,12 @@ class ArtistServiceTest {
         String search = "testArtistName";
         int size = 3;
         var request = ArtistRequestDtoFixture.artistSearchPaginationServiceRequest(size, search);
+        given(
+            artistUseCase.searchArtist(request.toDomainRequest())
+        )
+            .willReturn(
+                ArtistResponseDtoFixture.artistSearchPaginationDomainResponse(0, false)
+            );
 
         //when
         var result = artistService.searchArtist(request);
@@ -192,7 +201,7 @@ class ArtistServiceTest {
         SoftAssertions.assertSoftly(
             soft -> {
                 soft.assertThat(result).isNotNull();
-                soft.assertThat(result.successSubscriptionArtistIds().size())
+                soft.assertThat(result.subscriptionArtistIds().size())
                     .isEqualTo(existArtistsInRequest.size());
             }
         );
