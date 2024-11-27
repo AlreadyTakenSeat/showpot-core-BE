@@ -1,5 +1,6 @@
 package org.example.usecase;
 
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.Admin;
 import org.example.error.AdminError;
@@ -22,5 +23,9 @@ public class AdminUseCase {
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(AdminError.EMAIL_DUPLICATED_ERROR);
         }
+    }
+
+    public Admin findByEmail(String email) {
+        return adminRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
     }
 }

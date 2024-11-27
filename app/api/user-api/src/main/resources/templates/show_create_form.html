@@ -1,5 +1,6 @@
-<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<div layout:fragment="content" class="container my-3" style="background-color: #ffffff; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; width: 100%; max-width: 500px;">
+<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<div sec:authorize="isAuthenticated()"  layout:fragment="content" class="container my-3" style="background-color: #ffffff; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; width: 100%; max-width: 500px;">
 
   <form action="/admin/shows" method="post" enctype="multipart/form-data" style="padding: 20px;">
     <h2 class="text-center">추가할 공연 정보</h2>
