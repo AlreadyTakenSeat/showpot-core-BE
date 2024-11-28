@@ -1,6 +1,7 @@
-<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <body>
-<div layout:fragment="content" class="container-fluid my-3">
+<div sec:authorize="isAuthenticated()" layout:fragment="content" class="container-fluid my-3">
   <div class="container-fluid my-3">
     <h2 class="text-center">공연 목록</h2>
     <table class="table table-striped" width="100%">

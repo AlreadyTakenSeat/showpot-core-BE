@@ -1,5 +1,6 @@
-<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<div layout:fragment="content" class="container my-3">
+<html lang="ko" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<div sec:authorize="isAuthenticated()" layout:fragment="content" class="container my-3">
   <div class="container my-3">
     <h2 class="text-center">아티스트 목록</h2>
     <table class="table table-striped">

@@ -9,10 +9,14 @@ import org.example.filter.JWTFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -33,9 +37,21 @@ public class SecurityConfig {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+            .formLogin((formLogin) -> formLogin
+                .loginPage("/admin/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/admin/home")
+            )
+            .logout((logout) -> logout
+                .logoutUrl("/admin/logout")
+                .logoutSuccessUrl("/admin/home")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+            )
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
-                configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             )
             .authorizeHttpRequests(registry -> registry
                 .requestMatchers(getMatcherForUserAndAdmin())
@@ -111,5 +127,17 @@ public class SecurityConfig {
             antMatcher(HttpMethod.GET, "/api/v1/users/notifications"),
             antMatcher(HttpMethod.GET, "/api/v1/users/notifications/exist")
         );
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

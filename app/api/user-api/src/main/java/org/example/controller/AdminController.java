@@ -26,6 +26,12 @@ public class AdminController {
         return "home";
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/login")
+    public String login() {
+        return "login_form";
+    }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/signup")
     public void signup(
