@@ -193,10 +193,9 @@ public class UserShowController {
         @PathVariable("showId") UUID showId,
         @RequestParam("ticketingApiType") TicketingApiType type
     ) {
-        var now = LocalDateTime.now();
         return SuccessResponse.ok(
             TicketingAlertReservationApiResponse.from(
-                userShowService.findAlertsReservations(info.userId(), showId, type, now)
+                userShowService.findAlertsReservations(info.userId(), showId, type)
             )
         );
     }
