@@ -37,10 +37,8 @@ public class TicketingAlertUseCase {
     public TicketingAlertsDomainResponse alertReservation(
         TicketingAlertReservationDomainRequest request
     ) {
-        List<TicketingAlert> existingTicketingAlerts = ticketingAlertRepository.findAllByUserIdAndShowIdAndIsDeletedFalse(
-            request.userId(),
-            request.showId()
-        );
+        List<TicketingAlert> existingTicketingAlerts = ticketingAlertRepository
+            .findAllByUserIdAndShowIdAndIsDeletedFalse(request.userId(), request.showId());
 
         List<LocalDateTime> existingAlertAts = existingTicketingAlerts.stream()
             .map(TicketingAlert::getAlertTime)
