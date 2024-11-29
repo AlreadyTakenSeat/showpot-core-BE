@@ -26,10 +26,10 @@ public class ShowViewCountConsumer {
     private final Map<UUID, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
     @Retryable(
-            retryFor = OptimisticLockingFailureException.class,
-            maxAttempts = 10,
-            backoff = @Backoff(delay = 100, multiplier = 1.3, random = true),
-            recover = "recoverView"
+        retryFor = OptimisticLockingFailureException.class,
+        maxAttempts = 10,
+        backoff = @Backoff(delay = 100, multiplier = 1.3, random = true),
+        recover = "recoverView"
     )
     @Async
     @EventListener
@@ -52,13 +52,15 @@ public class ShowViewCountConsumer {
         } finally {
             if (isLocked) {
                 individualLock.unlock();
-                lockMap.compute(showId, (key, value) -> value != null && !value.isLocked() ? null : value);
+                lockMap.compute(showId,
+                    (key, value) -> value != null && !value.isLocked() ? null : value);
             }
         }
     }
 
     @Recover
-    public void recoverView(OptimisticLockingFailureException e, ShowViewCountEvent showViewCountEvent) {
+    public void recoverView(OptimisticLockingFailureException e,
+        ShowViewCountEvent showViewCountEvent) {
         log.error("Failed to increment view count for show ID: {}", showViewCountEvent.showId());
     }
 }

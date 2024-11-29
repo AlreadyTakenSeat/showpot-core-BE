@@ -2,7 +2,9 @@ package org.example.vo;
 
 import java.util.Arrays;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public enum ArtistGenreType {
 
     ROCK(
@@ -25,13 +27,14 @@ public enum ArtistGenreType {
     ),
     OPERA(List.of("opera")),
     POP(
-        List.of("acoustic", "anime", "cantopop", "disney", "pop", "power-pop", "swedish", "synth-pop")
+        List.of("acoustic", "anime", "cantopop", "disney", "pop", "power-pop", "swedish",
+            "synth-pop")
     ),
     RNB(List.of("funk", "groove", "r-n-b", "soul")),
     MUSICAL(List.of("comedy", "movies", "pop-film", "show-tunes", "soundtracks")),
     METAL(
         List.of("black-metal", "death-metal", "grindcore", "hardcore", "heavy-metal", "metal",
-        "metal-misc", "metalcore")
+            "metal-misc", "metalcore")
     ),
     JPOP(List.of("j-dance", "j-idol", "j-pop", "j-rock"));
 
@@ -41,10 +44,6 @@ public enum ArtistGenreType {
         this.genres = genres;
     }
 
-    public List<String> getGenres() {
-        return genres;
-    }
-
     public static String findByGenreClassificationName(String genre) {
         return Arrays.stream(ArtistGenreType.values())
             .filter(type -> type.genres.contains(genre))
@@ -52,5 +51,4 @@ public enum ArtistGenreType {
             .findFirst()
             .orElse(null);
     }
-
 }

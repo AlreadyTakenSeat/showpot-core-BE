@@ -61,7 +61,8 @@ public class UserUseCase {
     }
 
     public String findUserFcmTokensByUserId(UUID userId) {
-        return userRepository.findUserFcmTokensByUserId(userId).orElseThrow(NoSuchElementException::new);
+        return userRepository.findUserFcmTokensByUserId(userId)
+            .orElseThrow(NoSuchElementException::new);
     }
 
     public User findByIdOrElseThrow(UUID userId) {

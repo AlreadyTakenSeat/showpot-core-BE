@@ -19,7 +19,7 @@ public class ArtistFixture {
     public static List<Artist> manSoloArtists(int size) {
         return IntStream.range(0, size)
             .mapToObj(i ->
-                 Artist.builder()
+                Artist.builder()
                     .name("testEnglishName" + i)
                     .image("testImage" + i)
                     .spotifyId("spotifyId" + i)

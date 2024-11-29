@@ -35,13 +35,13 @@ create table admin
 
 create table artist
 (
-    id           uuid         not null,
-    created_at   timestamp(3) not null,
-    updated_at   timestamp(3) not null,
-    is_deleted   boolean      not null,
-    name         varchar(255) not null,
-    image        varchar(255) not null,
-    spotify_id   varchar(255) not null unique,
+    id         uuid         not null,
+    created_at timestamp(3) not null,
+    updated_at timestamp(3) not null,
+    is_deleted boolean      not null,
+    name       varchar(255) not null,
+    image      varchar(255) not null,
+    spotify_id varchar(255) not null unique,
     primary key (id)
 );
 
@@ -250,28 +250,28 @@ create table alarm.genre_subscription
 
 create table alarm.ticketing_alert
 (
-    is_deleted           boolean      not null,
-    created_at           timestamp(3) not null,
-    schedule_alert_time  timestamp(3) not null,
-    updated_at           timestamp(3) not null,
-    id                   uuid         not null,
-    show_id              uuid         not null,
-    ticketing_time       timestamp(3) not null,
-    name                 varchar(255) not null,
-    user_fcm_token       varchar(255) not null,
+    is_deleted          boolean      not null,
+    created_at          timestamp(3) not null,
+    schedule_alert_time timestamp(3) not null,
+    updated_at          timestamp(3) not null,
+    id                  uuid         not null,
+    show_id             uuid         not null,
+    ticketing_time      timestamp(3) not null,
+    name                varchar(255) not null,
+    user_fcm_token      varchar(255) not null,
     primary key (id)
 );
 
 create table alarm.show_alarm
 (
-    is_deleted           boolean      not null,
-    created_at           timestamp(3) not null,
-    updated_at           timestamp(3) not null,
-    id                   uuid         not null,
-    show_id              uuid         not null,
-    user_fcm_token       varchar(255) not null,
-    title                varchar(255) not null,
-    content              varchar(255) not null,
-    checked              boolean      not null,
+    is_deleted     boolean      not null,
+    created_at     timestamp(3) not null,
+    updated_at     timestamp(3) not null,
+    id             uuid         not null,
+    show_id        uuid         not null,
+    user_fcm_token varchar(255) not null,
+    title          varchar(255) not null,
+    content        varchar(255) not null,
+    checked        boolean      not null,
     primary key (id)
 );

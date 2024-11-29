@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ArtistSubscriptionQuerydslRepositoryImpl implements ArtistSubscriptionQuerydslRepository {
+public class ArtistSubscriptionQuerydslRepositoryImpl implements
+    ArtistSubscriptionQuerydslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 

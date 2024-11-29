@@ -153,7 +153,7 @@ public class ArtistUseCase {
                 filteredArtists.stream()
                     .limit(requiredLimit)
                     .map(it -> it.toDomainResponse(
-                        artistBySpotifyId.getOrDefault(
+                            artistBySpotifyId.getOrDefault(
                                 it.id(),
                                 null
                             )
