@@ -46,7 +46,8 @@ public enum ArtistGenreType {
 
     public static String findByGenreClassificationName(String genre) {
         return Arrays.stream(ArtistGenreType.values())
-            .filter(type -> type.genres.contains(genre))
+            .filter(type -> type.genres.stream()
+                .anyMatch(g -> genre.contains(g) || g.contains(genre)))
             .map(Enum::name)
             .findFirst()
             .orElse(null);

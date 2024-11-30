@@ -71,6 +71,8 @@ public class ArtistService {
             .map(Artist::getId)
             .toList();
 
+        var userFcmToken = userUseCase.findUserFcmTokensByUserId(request.userId());
+
         var subscribedArtistIds = artistSubscriptionUseCase
             .subscribe(requestArtistIds, request.userId()).stream()
             .map(ArtistSubscription::getArtistId)
@@ -81,7 +83,7 @@ public class ArtistService {
             .filter(artist -> subscribedArtistIds.contains(artist.getId()))
             .map(ArtistServiceMessage::from)
             .toList();
-        var userFcmToken = userUseCase.findUserFcmTokensByUserId(request.userId());
+
 
         messagePublisher.publishArtistSubscription(
             "artistSubscription",

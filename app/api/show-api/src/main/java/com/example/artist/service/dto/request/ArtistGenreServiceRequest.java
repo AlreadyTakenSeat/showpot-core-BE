@@ -21,7 +21,7 @@ public record ArtistGenreServiceRequest(
             .map(ArtistGenreType::findByGenreClassificationName)
             .filter(Objects::nonNull)
             .findFirst()
-            .orElse(genres.get(0))
+            .orElseGet(ArtistGenreType.POP::name)
             .toLowerCase();
 
         return ArtistGenreDomainRequest.builder()
