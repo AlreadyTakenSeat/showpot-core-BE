@@ -25,3 +25,11 @@ alarm:
 springdoc:
   swagger-ui:
     disable-swagger-default-url: true
+
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+    web:
+      exposure:
+        include: prometheus
