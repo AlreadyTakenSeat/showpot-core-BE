@@ -11,6 +11,4 @@ public record ArtistSearchPaginationDomainResponse(
     boolean hasNext
 ) {
 
-
-
 }
