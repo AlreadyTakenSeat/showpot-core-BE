@@ -27,9 +27,10 @@ springdoc:
     disable-swagger-default-url: true
 
 management:
-  endpoint:
-    prometheus:
-      enabled: true
+  endpoints:
     web:
       exposure:
         include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true

@@ -78,6 +78,7 @@ public class SecurityConfig {
 
     private RequestMatcher getMatcherForAnyone() {
         return RequestMatchers.anyOf(
+            antMatcher(HttpMethod.GET, "/actuator/prometheus"),
             antMatcher("/health"),
             antMatcher("/swagger-ui/**"),
             antMatcher("/v3/api-docs/**"),
