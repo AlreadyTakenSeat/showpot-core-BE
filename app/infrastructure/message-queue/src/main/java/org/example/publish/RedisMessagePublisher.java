@@ -11,6 +11,7 @@ import org.example.message.ArtistSubscriptionInfraMessage;
 import org.example.message.GenreSubscriptionInfraMessage;
 import org.example.message.ShowRelationArtistAndGenreInfraMessage;
 import org.example.message.TicketingReservationInfraMessage;
+import org.example.metric.MessageQueuePubMonitored;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -22,24 +23,28 @@ public class RedisMessagePublisher implements MessagePublisher {
     private final RedisTemplate<String, Object> template;
 
     @Override
+    @MessageQueuePubMonitored(topic = "show")
     public void publishShow(String topic, ShowRelationArtistAndGenreServiceMessage message) {
         var infraMessage = ShowRelationArtistAndGenreInfraMessage.from(message);
         publishMessage(topic, infraMessage);
     }
 
     @Override
+    @MessageQueuePubMonitored(topic = "artistSubscription")
     public void publishArtistSubscription(String topic, ArtistSubscriptionServiceMessage message) {
         var infraMessage = ArtistSubscriptionInfraMessage.from(message);
         publishMessage(topic, infraMessage);
     }
 
     @Override
+    @MessageQueuePubMonitored(topic = "genreSubscription")
     public void publishGenreSubscription(String topic, GenreSubscriptionServiceMessage message) {
         var infraMessage = GenreSubscriptionInfraMessage.from(message);
         publishMessage(topic, infraMessage);
     }
 
     @Override
+    @MessageQueuePubMonitored(topic = "ticketingAlert")
     public void publishTicketingReservation(String topic, TicketingAlertsToReserveServiceMessage message) {
         var infraMessage = TicketingReservationInfraMessage.from(message);
         publishMessage(topic, infraMessage);
