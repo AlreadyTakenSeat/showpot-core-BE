@@ -25,23 +25,23 @@ public class MessageQueueSubMetricAdvice {
         this.meterRegistry = meterRegistry;
     }
 
-    @Around("@annotation(org.example.metric.MessageQueuePubMonitored)")
+    @Around("@annotation(org.example.metric.MessageQueueSubMonitored)")
     public Object monitorExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        InternalApiMonitored annotation = method.getAnnotation(InternalApiMonitored.class);
-        String name = annotation.name(); // 메서드별 식별자
+        MessageQueueSubMonitored annotation = method.getAnnotation(MessageQueueSubMonitored.class);
+        String name = annotation.topic(); // 메서드별 식별자
 
         Counter successCounter = successCounters.computeIfAbsent(
-            name, key -> meterRegistry.counter("sub.success." + name, key)
+            name, key -> meterRegistry.counter("sub.success." + name, "method", key)
         );
 
         Counter failureCounter = failureCounters.computeIfAbsent(
-            name, key -> meterRegistry.counter("sub.failure." + name, key)
+            name, key -> meterRegistry.counter("sub.failure." + name, "method", key)
         );
 
         Timer timer = timers.computeIfAbsent(
             name,
-            key -> Timer.builder("sub.time." + name).register(meterRegistry)
+            key -> Timer.builder("sub.time." + name).tag("method", key).register(meterRegistry)
         );
 
         return MetricUtils.executeWithMetrics(timer, joinPoint, successCounter, failureCounter);

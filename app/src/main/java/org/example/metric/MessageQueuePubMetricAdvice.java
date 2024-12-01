@@ -28,20 +28,20 @@ public class MessageQueuePubMetricAdvice {
     @Around("@annotation(org.example.metric.MessageQueuePubMonitored)")
     public Object monitorExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        InternalApiMonitored annotation = method.getAnnotation(InternalApiMonitored.class);
-        String name = annotation.name(); // 메서드별 식별자
+        MessageQueuePubMonitored annotation = method.getAnnotation(MessageQueuePubMonitored.class);
+        String name = annotation.topic(); // 메서드별 식별자
 
         Counter successCounter = successCounters.computeIfAbsent(
-            name, key -> meterRegistry.counter("pub.success." + name, key)
+            name, key -> meterRegistry.counter("pub.success." + name, "method", key)
         );
 
         Counter failureCounter = failureCounters.computeIfAbsent(
-            name, key -> meterRegistry.counter("pub.failure." + name, key)
+            name, key -> meterRegistry.counter("pub.failure." + name, "method", key)
         );
 
         Timer timer = timers.computeIfAbsent(
             name,
-            key -> Timer.builder("pub.time." + name).register(meterRegistry)
+            key -> Timer.builder("pub.time." + name).tag("method", key).register(meterRegistry)
         );
 
         return MetricUtils.executeWithMetrics(timer, joinPoint, successCounter, failureCounter);
