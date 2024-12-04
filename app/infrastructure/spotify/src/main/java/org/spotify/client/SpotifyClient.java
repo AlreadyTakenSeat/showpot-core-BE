@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.metric.OpenApiMonitored;
 import org.spotify.client.dto.request.AccessTokenSpotifyRequest;
 import org.spotify.client.dto.request.ArtistSearchSpotifyRequest;
 import org.spotify.client.dto.request.ArtistsSpotifyRequest;
@@ -23,6 +24,7 @@ public class SpotifyClient {
 
     private final SpotifyProperty spotifyProperty;
 
+    @OpenApiMonitored(name = "accessToken")
     public String requestAccessToken() {
         ResponseEntity<SpotifyAccessTokenResponse> result = RestClient.create(spotifyProperty.tokenApiURL())
             .post()
@@ -46,6 +48,7 @@ public class SpotifyClient {
         return result.getBody().accessToken();
     }
 
+    @OpenApiMonitored(name = "search")
     public SpotifySearchResponse searchArtist(ArtistSearchSpotifyRequest request) {
         ResponseEntity<SpotifySearchResponse> result =
             RestClient.create(spotifyProperty.apiURL() + "/search?" + request.toQueryParameter())
@@ -65,6 +68,7 @@ public class SpotifyClient {
         return result.getBody();
     }
 
+    @OpenApiMonitored(name = "artists")
     public SpotifyArtistsResponse findArtistsBySpotifyArtistId(ArtistsSpotifyRequest request) {
         ResponseEntity<SpotifyArtistsResponse> result =
             RestClient.create(spotifyProperty.apiURL() + "/artists?" + request.toQueryParameter())
