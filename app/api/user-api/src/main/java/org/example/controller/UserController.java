@@ -1,6 +1,8 @@
 package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -75,7 +77,16 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reissue")
-    @Operation(summary = "토큰 재발급")
+    @Operation(
+        summary = "토큰 재발급",
+        parameters = {
+            @Parameter(
+                    in = ParameterIn.HEADER,
+                    name = "Refresh",
+                    description = "리프레시 토큰",
+                required = true)
+            }
+    )
     public SuccessResponse<ReissueApiResponse> reissue(
         @AuthenticationPrincipal AuthenticatedInfo info
     ) {
