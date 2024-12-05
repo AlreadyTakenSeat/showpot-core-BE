@@ -18,8 +18,8 @@ public record TicketingAlertReservationServiceResponse(
     ) {
         List<TicketingAlertReservationTimeServiceParam> times = reservedAlerts.stream()
             .map(alert -> {
-                int beforeMinutes = (int) Duration.between(alert.getAlertTime(), ticketingAt)
-                    .toMinutes();
+                int beforeMinutes = Long.valueOf(Duration.between(alert.getAlertTime(), ticketingAt)
+                    .toMinutes()).intValue();
 
                 boolean canReserve = alert.getAlertTime().isAfter(LocalDateTime.now());
                 return TicketingAlertReservationTimeServiceParam.builder()
