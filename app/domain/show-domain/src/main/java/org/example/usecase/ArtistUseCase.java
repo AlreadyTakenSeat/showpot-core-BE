@@ -51,9 +51,13 @@ public class ArtistUseCase {
 
     @Transactional
     public void save(ArtistWithGenreCreateDomainRequest request) {
+        List<Genre> existGenres = genreRepository.findAllByNameIn(request.getGenreNames());
+
         for (ArtistGenreDomainRequest artistGenre : request.artistGenres()) {
-            Genre genre = genreRepository.findByName(artistGenre.genreName())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 장르가 존재하지 않습니다."));
+            Genre genre = existGenres.stream()
+                .filter(exsistGenre -> exsistGenre.getName().equals(artistGenre.genreName()))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
 
             Artist newArtist = artistGenre.toArtist();
             artistRepository.save(newArtist);
