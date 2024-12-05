@@ -133,7 +133,7 @@ public class UserShowService {
         ShowTicketingTime ticketingTime = showUseCase.findTicketingAlertReservation(showId, type.toDomainType());
         List<TicketingAlert> ticketingAlerts = ticketingAlertUseCase.findTicketingAlerts(userId, showId);
 
-        return TicketingAlertReservationServiceResponse.as(
+        return TicketingAlertReservationServiceResponse.of(
             ticketingTime.getTicketingAt(),
             ticketingAlerts
         );

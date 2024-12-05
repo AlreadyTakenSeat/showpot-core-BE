@@ -12,7 +12,7 @@ public record TicketingAlertReservationServiceResponse(
     List<TicketingAlertReservationTimeServiceParam> times
 ) {
 
-    public static TicketingAlertReservationServiceResponse as(
+    public static TicketingAlertReservationServiceResponse of(
         LocalDateTime ticketingAt,
         List<TicketingAlert> reservedAlerts
     ) {

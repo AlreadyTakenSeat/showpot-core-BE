@@ -49,7 +49,7 @@ public class ShowAdminService {
         var artistNameWithShowIdDomainResponses = artistUseCase.findArtistNamesWithShowId();
         var genreNameWithShowIdDomainResponses = genreUseCase.findGenreNamesWithShowId();
 
-        return ShowInfoServiceResponse.as(
+        return ShowInfoServiceResponse.of(
             showWithTicketingTimesDomainResponses,
             artistNameWithShowIdDomainResponses,
             genreNameWithShowIdDomainResponses
