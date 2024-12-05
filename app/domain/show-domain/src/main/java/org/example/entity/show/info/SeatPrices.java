@@ -16,15 +16,15 @@ public class SeatPrices {
     @Column(name = "seat_prices", columnDefinition = "jsonb", nullable = false)
     private Map<String, Integer> priceBySeat = new HashMap<>();
 
+    public SeatPrices(Map<String, Integer> priceBySeat) {
+        this.priceBySeat = priceBySeat;
+    }
+
     public void savePriceInformation(String seatType, Integer price) {
         priceBySeat.put(seatType, price);
     }
 
     public Map<String, Integer> getPriceBySeat() {
         return new HashMap<>(priceBySeat);
-    }
-
-    public SeatPrices(Map<String, Integer> priceBySeat) {
-        this.priceBySeat = priceBySeat;
     }
 }

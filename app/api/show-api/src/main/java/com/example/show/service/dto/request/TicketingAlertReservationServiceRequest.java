@@ -1,6 +1,5 @@
 package com.example.show.service.dto.request;
 
-import com.example.show.controller.vo.TicketingAlertTimeApiType;
 import com.example.show.controller.vo.TicketingApiType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,7 @@ public record TicketingAlertReservationServiceRequest(
     UUID userId,
     UUID showId,
     TicketingApiType type,
-    List<TicketingAlertTimeApiType> alertTimes
+    List<LocalDateTime> alertAts
 ) {
 
     public TicketingAlertReservationDomainRequest toDomainRequest(
@@ -27,7 +26,13 @@ public record TicketingAlertReservationServiceRequest(
             .type(type.toDomainType())
             .name(name)
             .ticketingAt(ticketingAt)
-            .alertTimes(TicketingAlertTimeApiType.availableReserveTimeToDomainType(ticketingAt, alertTimes))
+            .alertAts(getAlertAts(ticketingAt))
             .build();
+    }
+
+    private List<LocalDateTime> getAlertAts(LocalDateTime ticketingAt) {
+        return alertAts.stream()
+            .filter(alertTime -> alertTime.isBefore(ticketingAt))
+            .toList();
     }
 }

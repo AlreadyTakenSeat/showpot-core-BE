@@ -58,7 +58,10 @@ public class InterestShowUseCase {
         interestShowRepository.deleteAllByUserId(userId);
     }
 
-    private Optional<InterestShow> findOptionalInterestShowByShowIdAndUserId(UUID showId, UUID userId) {
+    private Optional<InterestShow> findOptionalInterestShowByShowIdAndUserId(
+        UUID showId,
+        UUID userId
+    ) {
         return interestShowRepository.findByShowIdAndUserId(showId, userId);
     }
 }

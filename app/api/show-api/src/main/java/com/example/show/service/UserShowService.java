@@ -91,14 +91,13 @@ public class UserShowService {
             throw new BusinessException(ShowError.TICKETING_ALERT_RESERVED_ERROR);
         }
 
+        String userFcmToken = userUseCase.findUserFcmTokensByUserId(request.userId());
         var domainResponse = ticketingAlertUseCase.alertReservation(
             request.toDomainRequest(
                 showTicketingTime.getShow().getTitle(),
                 showTicketingTime.getTicketingAt()
             )
         );
-
-        String userFcmToken = userUseCase.findUserFcmTokensByUserId(request.userId());
 
         messagePublisher.publishTicketingReservation(
             "ticketingAlert",
@@ -129,16 +128,14 @@ public class UserShowService {
     public TicketingAlertReservationServiceResponse findAlertsReservations(
         UUID userId,
         UUID showId,
-        TicketingApiType type,
-        LocalDateTime now
+        TicketingApiType type
     ) {
         ShowTicketingTime ticketingTime = showUseCase.findTicketingAlertReservation(showId, type.toDomainType());
         List<TicketingAlert> ticketingAlerts = ticketingAlertUseCase.findTicketingAlerts(userId, showId);
 
-        return TicketingAlertReservationServiceResponse.as(
+        return TicketingAlertReservationServiceResponse.of(
             ticketingTime.getTicketingAt(),
-            ticketingAlerts,
-            now
+            ticketingAlerts
         );
     }
 

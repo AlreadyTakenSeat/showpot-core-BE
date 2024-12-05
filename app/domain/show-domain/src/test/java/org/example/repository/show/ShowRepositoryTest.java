@@ -31,7 +31,6 @@ public class ShowRepositoryTest extends QueryTest {
         showTicketingTimeRepository.save(showNormalTicketingTime);
         showTicketingTimeRepository.save(showPreTicketingTime);
 
-
         //when
         var result = showRepository.findShowDetailWithTicketingTimes();
 
