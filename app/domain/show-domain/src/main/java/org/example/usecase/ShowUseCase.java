@@ -49,7 +49,8 @@ public class ShowUseCase {
     }
 
     private Show findShowWithLockOrThrowNoSuchElementException(UUID id) {
-        return showRepository.findByIdAndIsDeletedWithLock(id).orElseThrow(NoSuchElementException::new);
+        return showRepository.findByIdAndIsDeletedWithLock(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 
     public ShowSearchPaginationDomainResponse searchShow(
@@ -85,6 +86,7 @@ public class ShowUseCase {
     }
 
     public Show findShowOrThrowNoSuchElementException(UUID id) {
-        return showRepository.findByIdAndIsDeletedFalse(id).orElseThrow(NoSuchElementException::new);
+        return showRepository.findByIdAndIsDeletedFalse(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 }

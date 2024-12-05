@@ -1,13 +1,9 @@
 package com.example.show.service.dto.response;
 
-import com.example.show.controller.vo.TicketingAlertTimeApiType;
 import com.example.show.service.dto.param.TicketingAlertReservationTimeServiceParam;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import org.example.entity.usershow.TicketingAlert;
 
@@ -16,37 +12,26 @@ public record TicketingAlertReservationServiceResponse(
     List<TicketingAlertReservationTimeServiceParam> times
 ) {
 
-    public static TicketingAlertReservationServiceResponse as(
+    public static TicketingAlertReservationServiceResponse of(
         LocalDateTime ticketingAt,
-        List<TicketingAlert> reservedAlerts,
-        LocalDateTime now
+        List<TicketingAlert> reservedAlerts
     ) {
-        Set<TicketingAlertTimeApiType> distinctAlertTimes = reservedAlerts.stream()
+        List<TicketingAlertReservationTimeServiceParam> times = reservedAlerts.stream()
             .map(alert -> {
-                int minutesGap = (int) Duration.between(alert.getAlertTime(), ticketingAt).toMinutes();
-                return TicketingAlertTimeApiType.getTicketingAlertTimeByMinutesGap(minutesGap);
-            }).collect(Collectors.toSet());
+                int beforeMinutes = Long.valueOf(Duration.between(alert.getAlertTime(), ticketingAt)
+                    .toMinutes()).intValue();
 
-        return new TicketingAlertReservationServiceResponse(
-            Arrays.stream(TicketingAlertTimeApiType.values())
-                .map(alertTimeType -> {
-                        LocalDateTime alertTime = ticketingAt.minusMinutes(alertTimeType.getMinutes());
+                boolean canReserve = alert.getAlertTime().isAfter(LocalDateTime.now());
+                return TicketingAlertReservationTimeServiceParam.builder()
+                    .beforeMinutes(beforeMinutes)
+                    .isReserved(true)
+                    .canReserve(canReserve)
+                    .build();
+            })
+            .toList();
 
-                        if (alertTime.isBefore(now)) {
-                            return TicketingAlertReservationTimeServiceParam.builder()
-                                .time(alertTimeType)
-                                .isReserved(false)
-                                .canReserve(false)
-                                .build();
-                        }
-
-                        return TicketingAlertReservationTimeServiceParam.builder()
-                            .time(alertTimeType)
-                            .isReserved(distinctAlertTimes.contains(alertTimeType))
-                            .canReserve(true)
-                            .build();
-                    }
-                ).toList()
-        );
+        return TicketingAlertReservationServiceResponse.builder()
+            .times(times)
+            .build();
     }
 }

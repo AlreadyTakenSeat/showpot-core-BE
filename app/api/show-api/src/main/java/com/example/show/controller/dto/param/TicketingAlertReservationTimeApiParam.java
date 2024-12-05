@@ -18,7 +18,7 @@ public record TicketingAlertReservationTimeApiParam(
         TicketingAlertReservationTimeServiceParam param
     ) {
         return TicketingAlertReservationTimeApiParam.builder()
-            .beforeMinutes(param.time().getMinutes())
+            .beforeMinutes(param.beforeMinutes())
             .isReserved(param.isReserved())
             .canReserve(param.canReserve())
             .build();

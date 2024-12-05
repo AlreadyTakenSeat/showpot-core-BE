@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
-import org.example.vo.TicketingAlertTime;
 import org.example.vo.TicketingType;
 
 @Builder
@@ -15,7 +14,7 @@ public record TicketingAlertReservationDomainRequest(
     TicketingType type,
     String name,
     LocalDateTime ticketingAt,
-    List<TicketingAlertTime> alertTimes
+    List<LocalDateTime> alertAts
 ) {
 
 }

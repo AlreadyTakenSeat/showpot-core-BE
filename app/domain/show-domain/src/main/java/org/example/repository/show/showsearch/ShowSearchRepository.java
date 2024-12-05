@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ShowSearchRepository extends JpaRepository<ShowSearch, UUID>,
     ShowSearchQuerydslRepository {
+
     List<ShowSearch> findAllByShowIdAndIsDeletedFalse(UUID showId);
 }

@@ -51,18 +51,18 @@ public class ArtistUseCase {
 
     @Transactional
     public void save(ArtistWithGenreCreateDomainRequest request) {
+        List<Genre> existGenres = genreRepository.findAllByNameIn(request.getGenreNames());
+
         for (ArtistGenreDomainRequest artistGenre : request.artistGenres()) {
+            Genre genre = existGenres.stream()
+                .filter(exsistGenre -> exsistGenre.getName().equals(artistGenre.genreName()))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
             Artist newArtist = artistGenre.toArtist();
             artistRepository.save(newArtist);
 
-            try {
-                Genre genre = genreRepository.findByName(artistGenre.genreName())
-                    .orElseThrow(NoSuchElementException::new);
-
-                artistGenreRepository.save(newArtist.toArtistGenre(genre.getId()));
-            } catch (NoSuchElementException e) {
-                log.warn("해당하는 장르가 존재하지 않습니다.");
-            }
+            artistGenreRepository.save(newArtist.toArtistGenre(genre.getId()));
         }
     }
 
@@ -153,7 +153,7 @@ public class ArtistUseCase {
                 filteredArtists.stream()
                     .limit(requiredLimit)
                     .map(it -> it.toDomainResponse(
-                        artistBySpotifyId.getOrDefault(
+                            artistBySpotifyId.getOrDefault(
                                 it.id(),
                                 null
                             )

@@ -51,7 +51,7 @@ public record ShowInfoServiceResponse(
         );
     }
 
-    public static List<ShowInfoServiceResponse> as(
+    public static List<ShowInfoServiceResponse> of(
         List<ShowWithTicketingTimesDomainParam> showWithTicketingTimes,
         List<ArtistNamesWithShowIdDomainParam> artistNamesWithShowId,
         List<GenreNamesWithShowIdDomainParam> genreNamesWithShowId
