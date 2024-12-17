@@ -8,7 +8,7 @@
 ![survey](https://github.com/user-attachments/assets/1593677f-2b50-4bec-8a3d-7521902c5691)
 
 ## Tech Stack Selection Process
-- 기술 & 인프라 선정 과정 및 근거 (작성중...)
+- [기술 & 인프라 선정 과정 및 근거](https://github.com/AlreadyTakenSeat/showpot-core-BE/wiki/Showpot-%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0)
 
 ## Engineering Challenge Wiki
 _* 개발하며 고민한 문제 해결 작업들을 작성 중입니다._
@@ -47,5 +47,5 @@ _* 개발하며 고민한 문제 해결 작업들을 작성 중입니다._
 ## Member
 |[@GaBaljaintheroom](https://github.com/GaBaljaintheroom)|[@ohksj77](https://github.com/ohksj77)|
 |:------:|:------:|
-|!<img src="https://avatars.githubusercontent.com/u/97604953?v=4" width="200" height="200">|<img src="https://avatars.githubusercontent.com/u/89020004?v=4" width="200" height="200">|
+|<img src="https://avatars.githubusercontent.com/u/97604953?v=4" width="200" height="200">|<img src="https://avatars.githubusercontent.com/u/89020004?v=4" width="200" height="200">|
 |Backend, Infra|Backend, Infra|
