@@ -112,6 +112,29 @@ public class ArtistService {
             ).build();
     }
 
+    public List<Artist> findOrCreateArtistByLock(ArtistSubscriptionServiceRequest request) {
+        List<Artist> artists = new ArrayList<>();
+        boolean isLocked = false;
+        try {
+            isLocked = lock.tryLock(1500L, TimeUnit.MILLISECONDS);
+
+            if (!isLocked) {
+                log.error("Artist subscribe event: {}", request);
+                return List.of();
+            }
+            artists = artistUseCase.findOrCreateArtistBySpotifyId(request.spotifyArtistIds());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted while trying to lock for findOrCreate Artist: {}", request);
+        } finally {
+            if (isLocked) {
+                lock.unlock();
+            }
+        }
+
+        return artists;
+    }
+
     public ArtistUnsubscriptionServiceResponse unsubscribe(
         ArtistUnsubscriptionServiceRequest request
     ) {
@@ -193,29 +216,5 @@ public class ArtistService {
         return subscriptions.stream()
             .map(ArtistSubscription::getArtistId)
             .toList();
-    }
-
-    private List<Artist> findOrCreateArtistByLock(ArtistSubscriptionServiceRequest request) {
-        List<Artist> artists = new ArrayList<>();
-        boolean isLocked = false;
-        try {
-            isLocked = lock.tryLock(1500L, TimeUnit.MILLISECONDS);
-
-            if (!isLocked) {
-                log.error("Artist subscribe event: {}", request);
-                return List.of();
-            }
-            artists = artistUseCase.findOrCreateArtistBySpotifyId(request.spotifyArtistIds());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Thread interrupted while trying to lock for findOrCreate Artist: {}",
-                request);
-        } finally {
-            if (isLocked) {
-                lock.unlock();
-            }
-        }
-
-        return artists;
     }
 }
