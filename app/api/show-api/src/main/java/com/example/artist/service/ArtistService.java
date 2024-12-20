@@ -15,9 +15,13 @@ import com.example.artist.service.dto.response.NumberOfSubscribedArtistServiceRe
 import com.example.pub.MessagePublisher;
 import com.example.pub.message.ArtistServiceMessage;
 import com.example.pub.message.ArtistSubscriptionServiceMessage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.response.CursorApiResponse;
 import org.example.dto.response.PaginationServiceResponse;
 import org.example.entity.artist.Artist;
@@ -27,6 +31,7 @@ import org.example.usecase.ArtistUseCase;
 import org.example.usecase.UserUseCase;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ArtistService {
@@ -36,6 +41,7 @@ public class ArtistService {
     private final ArtistSubscriptionUseCase artistSubscriptionUseCase;
     private final UserUseCase userUseCase;
     private final MessagePublisher messagePublisher;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public PaginationServiceResponse<ArtistSearchPaginationServiceParam> searchArtist(
         ArtistSearchPaginationServiceRequest request
@@ -62,11 +68,16 @@ public class ArtistService {
         );
     }
 
+    /**
+     * 사용자가 아티스트를 구독하도록 처리하는 메서드입니다.
+     * 요청한 아티스트가 DB에 존재하지 않을 경우 새로 생성하며,
+     * 구독이 완료되면 알람 서버로 Pub을 합니다.
+     *
+     * @param request 사용자의 ID와 구독하려는 Spotify 아티스트 ID 목록을 포함하는 요청 객체
+     * @return 구독에 성공한 아티스트 ID 목록을 담은 응답 객체
+     */
     public ArtistSubscriptionServiceResponse subscribe(ArtistSubscriptionServiceRequest request) {
-        List<Artist> requestArtist = artistUseCase.findOrCreateArtistBySpotifyId(
-            request.spotifyArtistIds()
-        );
-
+        List<Artist> requestArtist = findOrCreateArtistByLock(request);
         List<UUID> requestArtistIds = requestArtist.stream()
             .map(Artist::getId)
             .toList();
@@ -83,7 +94,6 @@ public class ArtistService {
             .filter(artist -> subscribedArtistIds.contains(artist.getId()))
             .map(ArtistServiceMessage::from)
             .toList();
-
 
         messagePublisher.publishArtistSubscription(
             "artistSubscription",
@@ -183,5 +193,29 @@ public class ArtistService {
         return subscriptions.stream()
             .map(ArtistSubscription::getArtistId)
             .toList();
+    }
+
+    private List<Artist> findOrCreateArtistByLock(ArtistSubscriptionServiceRequest request) {
+        List<Artist> artists = new ArrayList<>();
+        boolean isLocked = false;
+        try {
+            isLocked = lock.tryLock(1500L, TimeUnit.MILLISECONDS);
+
+            if (!isLocked) {
+                log.error("Artist subscribe event: {}", request);
+                return List.of();
+            }
+            artists = artistUseCase.findOrCreateArtistBySpotifyId(request.spotifyArtistIds());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted while trying to lock for findOrCreate Artist: {}",
+                request);
+        } finally {
+            if (isLocked) {
+                lock.unlock();
+            }
+        }
+
+        return artists;
     }
 }
