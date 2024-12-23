@@ -6,6 +6,7 @@ public record ErrorResponse(
     String errorCode,
     String message
 ) {
+
     private ErrorResponse(BusinessErrorResponseBuilder builder) {
         this(
             builder.error.getHttpStatus(),
@@ -83,4 +84,16 @@ public record ErrorResponse(
             return new ErrorResponse(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "{ \"code\": %d, \"errorId\": \"%s\", \"errorCode\": \"%s\", \"message\": \"%s\" }",
+            code,
+            errorId,
+            errorCode,
+            message
+        );
+    }
+
 }
