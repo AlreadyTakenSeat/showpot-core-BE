@@ -108,11 +108,10 @@ public class ArtistUseCase {
 
             Artist newArtist = artistGenre.toArtist();
 
-            transactionTemplate.execute(
+            transactionTemplate.executeWithoutResult(
                 status -> {
                     artistRepository.save(newArtist);
                     artistGenreRepository.save(newArtist.toArtistGenre(genre.getId()));
-                    return null;
                 }
             );
         }
