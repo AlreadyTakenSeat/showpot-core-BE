@@ -8,7 +8,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DateTimeUtil {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-d");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
         "yyyy-M-d HH:mm");
 
@@ -16,8 +15,8 @@ public class DateTimeUtil {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 
-    public static String formatDate(LocalDate date) {
-        return date.format(DATE_FORMATTER);
+    public static String formatDateTime(LocalDate date) {
+        return  date.atStartOfDay().format(DATE_TIME_FORMATTER);
     }
 
     public static LocalDateTime parseDateTime(String origin) {

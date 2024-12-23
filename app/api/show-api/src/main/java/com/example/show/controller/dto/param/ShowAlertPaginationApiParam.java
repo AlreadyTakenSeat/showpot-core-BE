@@ -32,8 +32,8 @@ public record ShowAlertPaginationApiParam(
         return new ShowAlertPaginationApiParam(
             serviceParam.id(),
             serviceParam.title(),
-            DateTimeUtil.formatDate(serviceParam.startAt()),
-            DateTimeUtil.formatDate(serviceParam.endAt()),
+            DateTimeUtil.formatDateTime(serviceParam.startAt()),
+            DateTimeUtil.formatDateTime(serviceParam.endAt()),
             DateTimeUtil.formatDateTime(serviceParam.ticketingAt()),
             serviceParam.location(),
             serviceParam.image()
