@@ -2,10 +2,14 @@ package org.example.config;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.exception.ErrorResponse;
 import org.example.filter.ExceptionHandlerFilter;
 import org.example.filter.JWTFilter;
+import org.example.security.error.TokenError;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,7 +18,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,6 +40,7 @@ public class SecurityConfig {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+            .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin((formLogin) -> formLogin
                 .loginPage("/admin/login")
                 .usernameParameter("email")
@@ -49,9 +53,22 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
             )
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .sessionManagement(
-                configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                .defaultAuthenticationEntryPointFor(
+                    (request, response, authException) -> {
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write(
+                            ErrorResponse.businessErrorResponseBuilder()
+                                .error(TokenError.WRONG_HEADER)
+                                .errorId(UUID.randomUUID().toString())
+                                .build()
+                                .toString()
+                        );
+                    },
+                    antMatcher("/admin/login")
+                )
             )
             .authorizeHttpRequests(registry -> registry
                 .requestMatchers(getMatcherForUserAndAdmin())
