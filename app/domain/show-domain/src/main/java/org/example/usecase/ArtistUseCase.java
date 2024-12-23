@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,17 +14,14 @@ import org.example.dto.artist.param.ArtistNamesWithShowIdDomainParam;
 import org.example.dto.artist.request.ArtistGenreDomainRequest;
 import org.example.dto.artist.request.ArtistPaginationDomainRequest;
 import org.example.dto.artist.request.ArtistSearchPaginationDomainRequest;
-import org.example.dto.artist.request.ArtistWithGenreCreateDomainRequest;
 import org.example.dto.artist.response.ArtistDetailDomainResponse;
 import org.example.dto.artist.response.ArtistNameDomainResponse;
 import org.example.dto.artist.response.ArtistPaginationDomainResponse;
 import org.example.dto.artist.response.ArtistSearchPaginationDomainResponse;
 import org.example.entity.artist.Artist;
 import org.example.entity.genre.Genre;
-import org.example.port.ArtistCreatePort;
 import org.example.port.ArtistSearchPort;
 import org.example.port.dto.param.ArtistSearchPortParam;
-import org.example.port.dto.request.ArtistCreatePortRequest;
 import org.example.port.dto.request.ArtistSearchPortRequest;
 import org.example.port.dto.request.ArtistsDetailPortRequest;
 import org.example.port.dto.response.ArtistSearchPortResponse;
@@ -34,7 +32,7 @@ import org.example.repository.genre.GenreRepository;
 import org.example.repository.show.showartist.ShowArtistRepository;
 import org.example.vo.ArtistFilterType;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 @Component
@@ -46,25 +44,7 @@ public class ArtistUseCase {
     private final ShowArtistRepository showArtistRepository;
     private final GenreRepository genreRepository;
     private final ArtistSearchPort artistSearchPort;
-    private final ArtistCreatePort artistCreatePort;
-
-
-    @Transactional
-    public void save(ArtistWithGenreCreateDomainRequest request) {
-        List<Genre> existGenres = genreRepository.findAllByNameIn(request.getGenreNames());
-
-        for (ArtistGenreDomainRequest artistGenre : request.artistGenres()) {
-            Genre genre = existGenres.stream()
-                .filter(exsistGenre -> exsistGenre.getName().equals(artistGenre.genreName()))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-
-            Artist newArtist = artistGenre.toArtist();
-            artistRepository.save(newArtist);
-
-            artistGenreRepository.save(newArtist.toArtistGenre(genre.getId()));
-        }
-    }
+    private final TransactionTemplate transactionTemplate;
 
     public List<ArtistDetailDomainResponse> findAllWithGenreNames() {
         return artistRepository.findAllWithGenreNames();
@@ -104,12 +84,37 @@ public class ArtistUseCase {
             .map(ArtistSearchPortParam::toArtist)
             .toList();
 
-        artistCreatePort.createArtist(
-            "createArtist",
-            ArtistCreatePortRequest.from(response.artists(), newArtists)
-        );
+        saveArtists(response.artists(), newArtists);
 
         return Stream.concat(existArtists.stream(), newArtists.stream()).toList();
+    }
+
+    public void saveArtists(List<ArtistSearchPortParam> params, List<Artist> newArtists) {
+        List<ArtistGenreDomainRequest> artistGenres = IntStream.range(0, params.size())
+            .mapToObj(i -> params.get(i).toDomainRequest(newArtists.get(i).getId()))
+            .toList();
+
+        List<Genre> existGenres = genreRepository.findAllByNameIn(
+            artistGenres.stream()
+                .map(ArtistGenreDomainRequest::genreName)
+                .toList()
+        );
+
+        for (ArtistGenreDomainRequest artistGenre : artistGenres) {
+            Genre genre = existGenres.stream()
+                .filter(exsistGenre -> exsistGenre.getName().equals(artistGenre.genreName()))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+            Artist newArtist = artistGenre.toArtist();
+
+            transactionTemplate.executeWithoutResult(
+                status -> {
+                    artistRepository.save(newArtist);
+                    artistGenreRepository.save(newArtist.toArtistGenre(genre.getId()));
+                }
+            );
+        }
     }
 
     public ArtistPaginationDomainResponse findAllArtistInCursorPagination(

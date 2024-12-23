@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.dto.event.ShowViewCountEventDto;
 import org.example.dto.response.PaginationServiceResponse;
 import org.example.dto.show.response.ShowDetailDomainResponse;
-import org.example.dto.viewcount.ShowViewCountEvent;
 import org.example.usecase.InterestShowUseCase;
 import org.example.usecase.ShowUseCase;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +34,7 @@ public class ShowService {
             userId != null && interestShowUseCase.findInterestShow(showId, userId).isPresent();
 
         if (viewCountComponent.validateViewCount(showId, deviceToken)) {
-            applicationEventPublisher.publishEvent(ShowViewCountEvent.from(showId));
+            applicationEventPublisher.publishEvent(ShowViewCountEventDto.from(showId));
         }
 
         return ShowDetailServiceResponse.from(showDetail, isInterested);

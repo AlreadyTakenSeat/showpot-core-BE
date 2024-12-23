@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.viewcount.ShowViewCountEvent;
+import org.example.dto.event.ShowViewCountEventDto;
 import org.example.usecase.ShowUseCase;
 import org.springframework.context.event.EventListener;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -33,7 +33,7 @@ public class ShowViewCountConsumer {
     )
     @Async
     @EventListener
-    public void consumeShowViewCountEvent(ShowViewCountEvent showViewCountEvent) {
+    public void consumeShowViewCountEvent(ShowViewCountEventDto showViewCountEvent) {
         UUID showId = showViewCountEvent.showId();
         ReentrantLock individualLock = lockMap.computeIfAbsent(showId, k -> new ReentrantLock());
 
@@ -59,8 +59,9 @@ public class ShowViewCountConsumer {
     }
 
     @Recover
-    public void recoverView(OptimisticLockingFailureException e,
-        ShowViewCountEvent showViewCountEvent) {
+    public void recoverView(
+        OptimisticLockingFailureException e,
+        ShowViewCountEventDto showViewCountEvent) {
         log.error("Failed to increment view count for show ID: {}", showViewCountEvent.showId());
     }
 }
