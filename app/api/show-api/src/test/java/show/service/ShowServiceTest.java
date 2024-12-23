@@ -10,7 +10,7 @@ import com.example.component.ViewCountComponent;
 import com.example.show.service.ShowService;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
-import org.example.dto.viewcount.ShowViewCountEvent;
+import org.example.dto.event.ShowViewCountEventDto;
 import org.example.usecase.InterestShowUseCase;
 import org.example.usecase.ShowUseCase;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ class ShowServiceTest {
         var result = showService.getShow(userId, showId, viewIdentifier);
 
         //then
-        verify(applicationEventPublisher, times(1)).publishEvent(new ShowViewCountEvent(showId));
+        verify(applicationEventPublisher, times(1)).publishEvent(new ShowViewCountEventDto(showId));
         assertThat(result).isNotNull();
     }
 
@@ -78,7 +78,7 @@ class ShowServiceTest {
         var result = showService.getShow(userId, showId, viewIdentifier);
 
         //then
-        verify(applicationEventPublisher, times(0)).publishEvent(new ShowViewCountEvent(showId));
+        verify(applicationEventPublisher, times(0)).publishEvent(new ShowViewCountEventDto(showId));
         assertThat(result).isNotNull();
     }
 
