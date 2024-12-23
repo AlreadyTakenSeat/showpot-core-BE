@@ -3,6 +3,9 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+    properties:
+      jdbc:
+        time_zone: Asia/Seoul
   datasource:
     url: ${APPLICATION_DATASOURCE_URL_PROD}
     username: ${APPLICATION_DATASOURCE_USERNAME_PROD}
