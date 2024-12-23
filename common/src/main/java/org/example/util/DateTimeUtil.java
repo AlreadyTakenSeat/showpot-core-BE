@@ -2,26 +2,25 @@ package org.example.util;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class DateTimeUtil {
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-d");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+        "yyyy-M-d HH:mm");
+
     public static String formatDateTime(LocalDateTime dateTime) {
-        return formatDate(dateTime.toLocalDate()) + " " + formatTime(dateTime.toLocalTime());
+        return dateTime.format(DATE_TIME_FORMATTER);
     }
 
     public static String formatDate(LocalDate date) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        return date.format(dateFormatter);
-    }
-
-    public static String formatTime(LocalTime time) {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        return time.format(timeFormatter);
+        return date.format(DATE_FORMATTER);
     }
 
     public static LocalDateTime parseDateTime(String origin) {
-        return LocalDateTime.parse(origin, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        return LocalDateTime.parse(origin, DATE_TIME_FORMATTER);
     }
 }

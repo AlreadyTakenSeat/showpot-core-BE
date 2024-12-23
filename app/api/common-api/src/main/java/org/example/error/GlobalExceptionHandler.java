@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         String errorId = UUID.randomUUID().toString();
         ErrorResponse response = ErrorResponse.messageCustomErrorResponseBuilder()
             .errorId(errorId)
-            .message(GlobalError.ELEMENT_NOT_FOUND.getClientMessage())
+            .message(e.getMessage())
             .error(GlobalError.ELEMENT_NOT_FOUND)
             .build();
 
@@ -84,8 +84,9 @@ public class GlobalExceptionHandler {
         MissingServletRequestParameterException e
     ) {
         String errorId = UUID.randomUUID().toString();
-        ErrorResponse response = ErrorResponse.businessErrorResponseBuilder()
+        ErrorResponse response = ErrorResponse.messageCustomErrorResponseBuilder()
             .errorId(errorId)
+            .message(e.getMessage())
             .error(GlobalError.REQUEST_PARAM_NOT_FOUND)
             .build();
 
@@ -100,8 +101,9 @@ public class GlobalExceptionHandler {
         MethodArgumentTypeMismatchException e
     ) {
         String errorId = UUID.randomUUID().toString();
-        ErrorResponse response = ErrorResponse.businessErrorResponseBuilder()
+        ErrorResponse response = ErrorResponse.messageCustomErrorResponseBuilder()
             .errorId(errorId)
+            .message(e.getMessage())
             .error(GlobalError.REQUEST_PARAM_TYPE_MISMATCH)
             .build();
 
