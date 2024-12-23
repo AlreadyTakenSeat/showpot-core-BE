@@ -22,6 +22,6 @@ public class DateTimeUtil {
     }
 
     public static LocalDateTime parseDateTime(String origin) {
-        return LocalDateTime.parse(origin, DateTimeFormatter.ofPattern("yyyy-M-d HH:mm"));
+        return LocalDateTime.parse(origin, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
     }
 }
