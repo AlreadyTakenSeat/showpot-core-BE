@@ -33,8 +33,8 @@ public record InterestShowPaginationApiResponse(
         return InterestShowPaginationApiResponse.builder()
             .id(response.showId())
             .title(response.title())
-            .startAt(DateTimeUtil.formatDate(response.startAt()))
-            .endAt(DateTimeUtil.formatDate(response.endAt()))
+            .startAt(DateTimeUtil.formatDateTime(response.startAt()))
+            .endAt(DateTimeUtil.formatDateTime(response.endAt()))
             .location(response.location())
             .posterImageURL(response.posterImageURL())
             .build();
