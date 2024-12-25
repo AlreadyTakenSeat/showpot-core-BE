@@ -29,8 +29,8 @@ public record ShowSearchPaginationApiParam(
         return new ShowSearchPaginationApiParam(
             serviceParam.id(),
             serviceParam.title(),
-            DateTimeUtil.formatDate(serviceParam.startAt()),
-            DateTimeUtil.formatDate(serviceParam.endAt()),
+            DateTimeUtil.formatDateTime(serviceParam.startAt()),
+            DateTimeUtil.formatDateTime(serviceParam.endAt()),
             serviceParam.location(),
             serviceParam.image()
         );
