@@ -9,7 +9,7 @@ public record ArtistIdsApiResponse(
     UUID id,
 
     @Schema(description = "아티스트의 스포티파이 ID")
-    String artistSpotifyId
+    String spotifyId
 ) {
 
     public static ArtistIdsApiResponse from(ArtistIdsServiceResponse response) {

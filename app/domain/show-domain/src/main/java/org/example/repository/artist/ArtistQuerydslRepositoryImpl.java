@@ -84,6 +84,7 @@ public class ArtistQuerydslRepositoryImpl implements ArtistQuerydslRepository {
                 Projections.constructor(
                     ArtistSimpleDomainResponse.class,
                     artist.id,
+                    artist.spotifyId,
                     artist.name,
                     artist.image
                 )

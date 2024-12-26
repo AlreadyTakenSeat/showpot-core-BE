@@ -17,7 +17,7 @@ public record ArtistSearchPaginationApiParam(
     String name,
 
     @Schema(description = "아티스트의 스포티파이 ID")
-    String artistSpotifyId,
+    String spotifyId,
 
     @Schema(description = "아티스트 구독 여부")
     boolean isSubscribed
@@ -28,7 +28,7 @@ public record ArtistSearchPaginationApiParam(
             .id(param.artistId())
             .name(param.name())
             .imageURL(param.artistImageUrl())
-            .artistSpotifyId(param.artistSpotifyId())
+            .spotifyId(param.artistSpotifyId())
             .isSubscribed(param.isSubscribed())
             .build();
     }
