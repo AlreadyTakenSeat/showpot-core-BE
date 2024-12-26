@@ -175,7 +175,7 @@ public class ArtistUseCase {
         ArtistSearchPortResponse response
     ) {
         return response.artists().stream()
-            .filter(artist -> artist.genres().stream()
+            .filter(artist -> !artist.genres().isEmpty() && artist.genres().stream()
                 .noneMatch(ArtistFilterType::isKoreanArtist))
             .toList();
     }
