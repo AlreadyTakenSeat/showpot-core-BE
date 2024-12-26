@@ -7,6 +7,8 @@ import java.util.UUID;
 public record ArtistUnsubscriptionPaginationApiParam(
     @Schema(description = "아티스트 ID")
     UUID id,
+    @Schema(description = "아티스트의 스포티파이 ID")
+    String artistSpotifyId,
     @Schema(description = "아티스트 이미지 URL")
     String imageURL,
     @Schema(description = "아티스트 이름")
@@ -18,6 +20,7 @@ public record ArtistUnsubscriptionPaginationApiParam(
     ) {
         return new ArtistUnsubscriptionPaginationApiParam(
             param.id(),
+            param.spotifyId(),
             param.image(),
             param.name()
         );
