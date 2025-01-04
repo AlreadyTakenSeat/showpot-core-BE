@@ -36,10 +36,10 @@ public class UserAlarmService {
 
         var response = alarmClientManager.getNotificationPagination(userFcmToken, cursorId, cursorValue, size);
         if (response != null) {
-            List<UUID> showIds = response.data().stream()
+            List<UUID> showIdsByAlarm = response.data().stream()
                 .map(NotificationInfoResponse::showId)
                 .toList();
-            List<Show> shows = showRepository.findShowsByIdInAndIsDeletedFalse(showIds);
+            List<Show> shows = showRepository.findShowsByIdInAndIsDeletedFalse(showIdsByAlarm);
 
             return NotificationServiceResponse.of(response, shows);
         }
