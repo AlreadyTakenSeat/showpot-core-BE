@@ -1,5 +1,6 @@
 package org.example.client;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 @Component
 public class AlarmClientManager {
+
     private final AlarmServerProperty alarmServerProperty;
 
     @InternalApiMonitored(name = "status")
@@ -36,10 +38,10 @@ public class AlarmClientManager {
     }
 
     @InternalApiMonitored(name = "list")
-    public NotificationPaginationResponse getNotificationPagination(UUID cursorId,
-        int size, String userFcmToken) {
+    public NotificationPaginationResponse getNotificationPagination(String userFcmToken,
+        UUID cursorId, LocalDateTime cursorValue, int size) {
         ResponseEntity<NotificationPaginationResponse> result =
-            RestClient.create(createNotificationsUrl(userFcmToken, cursorId, size))
+            RestClient.create(createNotificationsUrl(userFcmToken, cursorId, cursorValue, size))
                 .post()
                 .retrieve()
                 .toEntity(NotificationPaginationResponse.class);
@@ -48,7 +50,7 @@ public class AlarmClientManager {
         return result.getBody();
     }
 
-    private String createNotificationsUrl(String userFcmToken, UUID cursorId, int size) {
+    private String createNotificationsUrl(String userFcmToken, UUID cursorId, LocalDateTime cursorValue, int size) {
         StringBuilder urlBuilder = new StringBuilder(alarmServerProperty.apiURL())
             .append("/show-alarm?fcmToken=")
             .append(userFcmToken)
@@ -57,6 +59,10 @@ public class AlarmClientManager {
 
         if (cursorId != null) {
             urlBuilder.append("&cursorId=").append(cursorId);
+        }
+
+        if (cursorValue != null) {
+            urlBuilder.append("&cursorValue=").append(cursorValue);
         }
 
         return urlBuilder.toString();
