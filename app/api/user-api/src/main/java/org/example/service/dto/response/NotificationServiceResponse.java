@@ -37,6 +37,7 @@ public record NotificationServiceResponse(
             .collect(Collectors.toMap(Show::getId, Show::getImage));
 
         List<NotificationInfoWithImageResponse> updatedData = response.data().stream()
+            .filter(info -> showIdToImageUrlMap.containsKey(info.showId()))
             .map(info -> NotificationInfoWithImageResponse.builder()
                 .id(info.id())
                 .showId(info.showId())
