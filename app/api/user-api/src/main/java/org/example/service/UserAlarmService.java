@@ -1,5 +1,6 @@
 package org.example.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -29,10 +30,11 @@ public class UserAlarmService {
         return alarmClientManager.getNotificationExist(userFcmToken);
     }
 
-    public NotificationServiceResponse findNotifications(UUID userId, UUID cursorId, int size) {
+    public NotificationServiceResponse findNotifications(UUID userId, UUID cursorId,
+        LocalDateTime cursorValue, int size) {
         String userFcmToken = findUserFcmTokenById(userId);
 
-        var response = alarmClientManager.getNotificationPagination(cursorId, size, userFcmToken);
+        var response = alarmClientManager.getNotificationPagination(userFcmToken, cursorId, cursorValue, size);
         if (response != null) {
             List<UUID> showIds = response.data().stream()
                 .map(NotificationInfoResponse::showId)

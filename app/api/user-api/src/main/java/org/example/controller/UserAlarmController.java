@@ -3,6 +3,7 @@ package org.example.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.controller.dto.param.SimpleNotificationApiParam;
@@ -43,20 +44,21 @@ public class UserAlarmController {
     @Operation(summary = "알림 목록")
     public SuccessResponse<PaginationApiResponse<SimpleNotificationApiParam>> getNotifications(
         @RequestParam(value = "cursorId", required = false) UUID cursorId,
+        @RequestParam(value = "cursorValue", required = false) LocalDateTime cursorValue,
         @RequestParam(value = "size") @Max(value = 30, message = "조회하는 데이터의 최대 개수는 30입니다.")
         Integer size,
         @AuthenticationPrincipal AuthenticatedInfo info
 
     ) {
-        var response = userAlarmService.findNotifications(info.userId(), cursorId, size);
+        var response = userAlarmService.findNotifications(info.userId(), cursorId, cursorValue, size);
         var data = response.data().stream()
             .map(SimpleNotificationApiParam::from)
             .toList();
 
         return SuccessResponse.ok(PaginationApiResponse.<SimpleNotificationApiParam>builder()
-                .hasNext(response.hasNext())
-                .data(data)
-                .cursor(response.cursor())
-                .build());
+            .hasNext(response.hasNext())
+            .data(data)
+            .cursor(response.cursor())
+            .build());
     }
 }
