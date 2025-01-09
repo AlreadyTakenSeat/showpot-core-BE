@@ -142,7 +142,7 @@ public class ArtistUseCase {
                     .build()
             );
 
-            filteredArtists.addAll(filterKoreanArtistSearch(response));
+            filteredArtists.addAll(filterKoreanArtist(response));
             offset += response.artists().size();
             hasNext = response.hasNext();
 
@@ -171,12 +171,11 @@ public class ArtistUseCase {
             .build();
     }
 
-    private List<ArtistSearchPortParam> filterKoreanArtistSearch(
+    private List<ArtistSearchPortParam> filterKoreanArtist(
         ArtistSearchPortResponse response
     ) {
         return response.artists().stream()
-            .filter(artist -> !artist.genres().isEmpty() && artist.genres().stream()
-                .noneMatch(ArtistFilterType::isKoreanArtist))
+            .filter(artist -> ArtistFilterType.isForeignArtist(artist.genres()))
             .toList();
     }
 
