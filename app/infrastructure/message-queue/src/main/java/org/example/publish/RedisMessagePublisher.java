@@ -12,13 +12,15 @@ import org.example.message.GenreSubscriptionInfraMessage;
 import org.example.message.ShowRelationArtistAndGenreInfraMessage;
 import org.example.message.TicketingReservationInfraMessage;
 import org.example.metric.MessageQueuePubMonitored;
+import org.example.pub.UserFcmMessage;
+import org.example.pub.UserMessagePublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisMessagePublisher implements MessagePublisher {
+public class RedisMessagePublisher implements MessagePublisher, UserMessagePublisher {
 
     private final RedisTemplate<String, Object> template;
 
@@ -49,6 +51,13 @@ public class RedisMessagePublisher implements MessagePublisher {
         var infraMessage = TicketingReservationInfraMessage.from(message);
         publishMessage(topic, infraMessage);
     }
+
+    @Override
+    @MessageQueuePubMonitored(topic = "userFCMToken")
+    public void publishFcmToken(String topic, UserFcmMessage message) {
+        publishMessage(topic, message);
+    }
+
 
     private void publishMessage(String topic, Object infraMessage) {
         template.convertAndSend(topic, infraMessage);

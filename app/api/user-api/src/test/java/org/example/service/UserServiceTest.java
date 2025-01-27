@@ -12,6 +12,7 @@ import org.example.entity.SocialLogin;
 import org.example.entity.User;
 import org.example.fixture.UserFixture;
 import org.example.fixture.dto.UserRequestDtoFixture;
+import org.example.pub.UserMessagePublisher;
 import org.example.security.dto.UserParam;
 import org.example.security.token.JWTGenerator;
 import org.example.security.token.TokenProcessor;
@@ -38,6 +39,7 @@ public class UserServiceTest {
     private final JWTGenerator jwtGenerator = mock(JWTGenerator.class);
     private final TokenProcessor tokenProcessor = mock(TokenProcessor.class);
     private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
+    private final UserMessagePublisher userMessagePublisher = mock(UserMessagePublisher.class);
 
     private final UserService userService = new UserService(
         userUseCase,
@@ -47,7 +49,8 @@ public class UserServiceTest {
         ticketingAlertUseCase,
         jwtGenerator,
         tokenProcessor,
-        transactionTemplate
+        transactionTemplate,
+        userMessagePublisher
     );
 
     @ParameterizedTest

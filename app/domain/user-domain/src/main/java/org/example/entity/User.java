@@ -49,10 +49,8 @@ public class User extends BaseEntity {
         this.userRole = UserRole.USER;
     }
 
-    public void dirtyCheckFcmToken(String fcmToken) {
-        if (fcmToken != null && !fcmToken.equals(this.fcmToken)) {
-            this.fcmToken = fcmToken;
-        }
+    public boolean isChangedFcmToken(String fcmToken) {
+        return fcmToken != null && !fcmToken.equals(this.fcmToken);
     }
 
     public boolean isWithdrew() {
@@ -61,5 +59,9 @@ public class User extends BaseEntity {
 
     public void changeNickname() {
         this.nickname = RandomNickname.makeRandomNickName();
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }

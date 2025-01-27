@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.response.UserProfileDomainResponse;
 import org.example.entity.SocialLogin;
 import org.example.entity.User;
+import org.example.pub.UserFcmMessage;
+import org.example.pub.UserMessagePublisher;
 import org.example.security.dto.TokenParam;
 import org.example.security.dto.UserParam;
 import org.example.security.token.JWTGenerator;
@@ -33,6 +35,7 @@ public class UserService {
     private final JWTGenerator jwtGenerator;
     private final TokenProcessor tokenProcessor;
     private final TransactionTemplate transactionTemplate;
+    private final UserMessagePublisher userMessagePublisher;
 
     public TokenParam login(LoginServiceRequest loginServiceRequest) {
         User user = getUser(loginServiceRequest);
@@ -74,10 +77,23 @@ public class UserService {
 
     private User getUser(LoginServiceRequest request) {
         try {
-            return userUseCase.findUser(request.toDomainRequest());
+            User user = userUseCase.findUser(request.toDomainRequest());
+
+            if (user.isChangedFcmToken(request.fcmToken())) {
+                updateUserFcmToken(user, user.getFcmToken(), request.fcmToken());
+            }
+
+            return user;
         } catch (NoSuchElementException e) {
             return createUser(request);
         }
+    }
+
+    private void updateUserFcmToken(User user, String previousFcmToken, String updatedFcmToken) {
+        userUseCase.updateFcmToken(user, updatedFcmToken);
+
+        userMessagePublisher.publishFcmToken("userFCMToken",
+            UserFcmMessage.of(user.getId(), previousFcmToken, updatedFcmToken));
     }
 
     private User createUser(LoginServiceRequest loginServiceRequest) {
