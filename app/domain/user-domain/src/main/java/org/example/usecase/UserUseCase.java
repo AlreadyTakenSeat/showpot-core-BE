@@ -69,7 +69,5 @@ public class UserUseCase {
     @Transactional
     public void updateFcmToken(User user, String fcmToken) {
         user.updateFcmToken(fcmToken);
-
-        userRepository.save(user);
     }
 }
