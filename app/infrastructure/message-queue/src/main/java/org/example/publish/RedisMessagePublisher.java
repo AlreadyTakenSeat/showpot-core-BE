@@ -53,7 +53,7 @@ public class RedisMessagePublisher implements MessagePublisher, UserMessagePubli
     }
 
     @Override
-    @MessageQueuePubMonitored(topic = "userFCMToken")
+    @MessageQueuePubMonitored(topic = "userFcmToken")
     public void publishFcmToken(String topic, UserFcmMessage message) {
         publishMessage(topic, message);
     }

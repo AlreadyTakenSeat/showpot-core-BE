@@ -92,7 +92,7 @@ public class UserService {
     private void updateUserFcmToken(User user, String previousFcmToken, String updatedFcmToken) {
         userUseCase.updateFcmToken(user, updatedFcmToken);
 
-        userMessagePublisher.publishFcmToken("userFCMToken",
+        userMessagePublisher.publishFcmToken("userFcmToken",
             UserFcmMessage.of(user.getId(), previousFcmToken, updatedFcmToken));
     }
 
