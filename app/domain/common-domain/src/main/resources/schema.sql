@@ -258,7 +258,7 @@ create table alarm.ticketing_alert
     show_id             uuid         not null,
     ticketing_time      timestamp(3) not null,
     name                varchar(255) not null,
-    user_fcm_token      varchar(255) not null,
+    user_id             uuid         not null,
     primary key (id)
 );
 

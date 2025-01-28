@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record TicketingReservationInfraMessage(
-    String userFcmToken,
+    UUID userId,
     String name,
     UUID showId,
     String ticketingAt,
@@ -20,7 +20,7 @@ public record TicketingReservationInfraMessage(
         TicketingAlertsToReserveServiceMessage message
     ) {
         return TicketingReservationInfraMessage.builder()
-            .userFcmToken(message.userFcmToken())
+            .userId(message.userId())
             .name(message.name())
             .showId(message.showId())
             .ticketingAt(message.ticketingAt().toString())

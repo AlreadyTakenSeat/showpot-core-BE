@@ -8,7 +8,7 @@ import org.example.dto.usershow.response.TicketingAlertsDomainResponse;
 
 @Builder
 public record TicketingAlertsToReserveServiceMessage(
-    String userFcmToken,
+    UUID userId,
     String name,
     UUID showId,
     LocalDateTime ticketingAt,
@@ -18,10 +18,10 @@ public record TicketingAlertsToReserveServiceMessage(
 
     public static TicketingAlertsToReserveServiceMessage of(
         TicketingAlertsDomainResponse response,
-        String userFcmToken
+        UUID userId
     ) {
         return TicketingAlertsToReserveServiceMessage.builder()
-            .userFcmToken(userFcmToken)
+            .userId(userId)
             .name(response.name())
             .showId(response.showId())
             .ticketingAt(response.ticketingAt())

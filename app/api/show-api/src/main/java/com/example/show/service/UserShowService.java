@@ -91,7 +91,6 @@ public class UserShowService {
             throw new BusinessException(ShowError.TICKETING_ALERT_RESERVED_ERROR);
         }
 
-        String userFcmToken = userUseCase.findUserFcmTokensByUserId(request.userId());
         var domainResponse = ticketingAlertUseCase.alertReservation(
             request.toDomainRequest(
                 showTicketingTime.getShow().getTitle(),
@@ -101,7 +100,7 @@ public class UserShowService {
 
         messagePublisher.publishTicketingReservation(
             "ticketingAlert",
-            TicketingAlertsToReserveServiceMessage.of(domainResponse, userFcmToken)
+            TicketingAlertsToReserveServiceMessage.of(domainResponse, request.userId())
         );
     }
 
