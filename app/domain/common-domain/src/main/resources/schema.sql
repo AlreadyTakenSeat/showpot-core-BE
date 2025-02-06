@@ -203,7 +203,7 @@ create table users
     gender         varchar(255)  not null check (gender in ('MAN', 'WOMAN', 'NOT_CHOSEN')),
     nickname       varchar(255)  not null unique,
     role           varchar(255)  not null check (role in ('GUEST', 'USER', 'ADMIN')),
-    profile_number integer,
+    profile_url    varchar(255),
     primary key (id)
 );
 
