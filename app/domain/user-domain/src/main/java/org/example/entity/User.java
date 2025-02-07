@@ -37,6 +37,9 @@ public class User extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
 
+    @Column(name = "profile_url")
+    private String profileUrl;
+
     @Builder
     public User(
         String nickname,
