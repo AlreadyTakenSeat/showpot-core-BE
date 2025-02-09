@@ -14,7 +14,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "org.example.repository.show",
     "org.example.repository.subscription",
     "org.example.repository.interest",
-    "org.example.repository.ticketing"
+    "org.example.repository.ticketing",
+    "org.example.repository.comment"
 }
 )
 public class ShowDomainConfig {
