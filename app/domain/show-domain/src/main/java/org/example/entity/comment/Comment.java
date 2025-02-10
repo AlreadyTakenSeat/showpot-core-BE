@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.entity.BaseEntity;
+import org.example.vo.CommentType;
 
 @Entity
 @Getter
@@ -47,5 +48,17 @@ public class Comment extends BaseEntity {
         this.parentId = parentId;
         this.content = content;
         this.commentType = commentType;
+    }
+
+    public void delete(UUID userId) {
+        if (!isWriter(userId)) {
+            throw new IllegalArgumentException();
+        }
+        super.softDelete();
+        this.content = "삭제된 댓글입니다.";
+    }
+
+    private boolean isWriter(UUID userId) {
+        return this.userId.equals(userId);
     }
 }

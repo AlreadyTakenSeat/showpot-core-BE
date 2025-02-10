@@ -1,4 +1,4 @@
-package org.example.entity.comment;
+package org.example.vo;
 
 public enum CommentType {
     SHOW,
