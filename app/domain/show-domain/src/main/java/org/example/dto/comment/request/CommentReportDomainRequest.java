@@ -5,10 +5,20 @@ import org.example.entity.comment.Report;
 import org.example.vo.ReportType;
 
 public record CommentReportDomainRequest(
-    ReportType reportType
+    ReportType reportType,
+    String directInput
 ) {
 
     public Report toReport(UUID userId, UUID commentId) {
+        if (directInput != null) {
+            return Report.builder()
+                .reportType(reportType)
+                .directInput(directInput)
+                .userId(userId)
+                .commentId(commentId)
+                .build();
+        }
+
         return Report.builder()
             .reportType(reportType)
             .userId(userId)

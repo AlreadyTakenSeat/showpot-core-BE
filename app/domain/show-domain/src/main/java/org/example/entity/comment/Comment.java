@@ -58,7 +58,7 @@ public class Comment extends BaseEntity {
         this.content = "삭제된 댓글입니다.";
     }
 
-    private boolean isWriter(UUID userId) {
+    public boolean isWriter(UUID userId) {
         return this.userId.equals(userId);
     }
 }

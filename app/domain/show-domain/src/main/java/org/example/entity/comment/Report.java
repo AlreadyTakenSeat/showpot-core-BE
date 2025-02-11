@@ -29,14 +29,19 @@ public class Report extends BaseEntity {
     @Column(name = "report_type", nullable = false)
     private ReportType reportType;
 
+    @Column(name = "direct_input")
+    private String directInput;
+
     @Builder
     private Report(
         UUID userId,
         UUID commentId,
-        ReportType reportType
+        ReportType reportType,
+        String directInput
     ) {
         this.userId = userId;
         this.commentId = commentId;
         this.reportType = reportType;
+        this.directInput = directInput;
     }
 }

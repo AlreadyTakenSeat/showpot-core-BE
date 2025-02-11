@@ -19,6 +19,7 @@ public class CommentUseCase {
     private final CommentRepository commentRepository;
     private final ReportRepository reportRepository;
 
+    @Transactional
     public void writeComment(CommentWriteDomainRequest request, UUID userId) {
         Comment comment = request.toComment(userId);
         commentRepository.save(comment);
@@ -30,7 +31,13 @@ public class CommentUseCase {
         comment.delete(userId);
     }
 
+    @Transactional
     public void reportComment(CommentReportDomainRequest request, UUID commentId, UUID userId) {
+        Comment comment = findComment(commentId);
+        if (comment.isWriter(userId)) {
+            throw new IllegalArgumentException();
+        }
+
         Report report = request.toReport(userId, commentId);
         reportRepository.save(report);
     }

@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.response.SuccessResponse;
 import org.example.dto.response.SuccessResponse.Empty;
 import org.example.security.dto.AuthenticatedInfo;
-import org.example.util.ValidatorUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/comment")
+@RequestMapping("/api/v1/comments")
 @Tag(name = "댓글")
 public class CommentController {
 
@@ -37,8 +36,7 @@ public class CommentController {
         @AuthenticationPrincipal AuthenticatedInfo info,
         @RequestBody @Valid CommentWriteApiRequest request
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.writeComment(request.toServiceRequest(), userId);
+        commentService.writeComment(request.toServiceRequest(), info.userId());
 
         return SuccessResponse.emptyData();
     }
@@ -50,8 +48,7 @@ public class CommentController {
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable UUID commentId
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.deleteComment(commentId, userId);
+        commentService.deleteComment(commentId, info.userId());
 
         return SuccessResponse.emptyData();
     }
@@ -64,8 +61,7 @@ public class CommentController {
         @PathVariable UUID commentId,
         @RequestBody @Valid CommentReportApiRequest request
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.reportComment(request.toServiceRequest(), commentId, userId);
+        commentService.reportComment(request.toServiceRequest(), commentId, info.userId());
 
         return SuccessResponse.emptyData();
     }
