@@ -29,7 +29,7 @@ public enum CommentError implements BusinessError {
     COMMENT_AUTHOR_DIFFERENT_ERROR {
         @Override
         public int getHttpStatus() {
-            return 400;
+            return 403;
         }
 
         @Override

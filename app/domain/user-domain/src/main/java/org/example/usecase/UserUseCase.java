@@ -72,7 +72,7 @@ public class UserUseCase {
         user.updateFcmToken(fcmToken);
     }
 
-    public List<User> findAllByUserIds(List<UUID> userId) {
-        return userRepository.findAllById(userId);
+    public List<User> findAllByUserIds(List<UUID> userIds) {
+        return userRepository.findAllById(userIds);
     }
 }
