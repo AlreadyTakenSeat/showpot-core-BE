@@ -1,4 +1,4 @@
-package com.example.comment.controller.dto;
+package com.example.comment.controller.dto.request;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotBlank;

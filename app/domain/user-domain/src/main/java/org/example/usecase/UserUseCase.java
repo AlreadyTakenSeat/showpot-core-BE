@@ -1,5 +1,6 @@
 package org.example.usecase;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +70,9 @@ public class UserUseCase {
     @Transactional
     public void updateFcmToken(User user, String fcmToken) {
         user.updateFcmToken(fcmToken);
+    }
+
+    public List<User> findAllByUserIds(List<UUID> userId) {
+        return userRepository.findAllById(userId);
     }
 }

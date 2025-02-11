@@ -146,7 +146,8 @@ public class SecurityConfig {
             antMatcher(HttpMethod.GET, "/api/v1/users/notifications/exist"),
             antMatcher(HttpMethod.POST, "/api/v1/comments"),
             antMatcher(HttpMethod.DELETE, "/api/v1/comments/{commentId}"),
-            antMatcher(HttpMethod.POST, "/api/v1/comments/{commentId}/report")
+            antMatcher(HttpMethod.POST, "/api/v1/comments/{commentId}/report"),
+            antMatcher(HttpMethod.GET, "/api/v1/comments/{refId}/**")
         );
     }
 

@@ -3,8 +3,10 @@ package org.example.usecase;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.dto.comment.request.CommentPaginationDomainRequest;
 import org.example.dto.comment.request.CommentReportDomainRequest;
 import org.example.dto.comment.request.CommentWriteDomainRequest;
+import org.example.dto.comment.response.CommentPaginationDomainResponse;
 import org.example.entity.comment.Comment;
 import org.example.entity.comment.Report;
 import org.example.repository.comment.CommentRepository;
@@ -45,5 +47,9 @@ public class CommentUseCase {
     private Comment findComment(UUID commentId) {
         return commentRepository.findByIdAndIsDeletedFalse(commentId)
             .orElseThrow(NoSuchElementException::new);
+    }
+
+    public CommentPaginationDomainResponse findCommentsByPagination(CommentPaginationDomainRequest request) {
+        return commentRepository.findAllWithCursorPagination(request);
     }
 }
