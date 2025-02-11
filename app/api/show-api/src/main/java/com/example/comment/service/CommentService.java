@@ -64,8 +64,8 @@ public class CommentService {
                     .parentId(comment.parentId())
                     .content(comment.content())
                     .isBlocked(comment.isBlocked())
-                    .profileURL(user.getProfileUrl())
-                    .userName(user.getNickname())
+                    .profileURL(user.getProfileUrl() == null ? null : user.getProfileUrl())
+                    .userName(user.getNickname() == null ? null : user.getNickname())
                     .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
                     .build();
             })
