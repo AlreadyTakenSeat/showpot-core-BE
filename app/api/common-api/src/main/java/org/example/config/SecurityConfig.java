@@ -115,7 +115,8 @@ public class SecurityConfig {
             antMatcher(HttpMethod.GET, "/api/v1/shows/search/**"),
             antMatcher(HttpMethod.GET, "/api/v1/artists/filter"),
             antMatcher(HttpMethod.GET, "/api/v1/artists/filter-total-count"),
-            antMatcher(HttpMethod.GET, "/api/v1/artists/unsubscriptions")
+            antMatcher(HttpMethod.GET, "/api/v1/artists/unsubscriptions"),
+            antMatcher(HttpMethod.GET, "/api/v1/files/profile-image/{id}")
         );
     }
 

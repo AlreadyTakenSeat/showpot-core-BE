@@ -48,6 +48,7 @@ jobs:
           spotify.client-id: ${{ secrets.SPOTIFY_CLIENT_ID }}
           spotify.client-secret: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           alarm.api-url: ${{ secrets.ALARM_SERVER_API_URL_PROD }}
+          file.root-url: ${{ secrets.FILE_ROOT_API_URL_PROD }}
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -Dspring.profiles.active=prod

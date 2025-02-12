@@ -1,0 +1,55 @@
+package org.example.user.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.entity.show.Show;
+import org.example.repository.show.ShowRepository;
+import org.example.repository.user.UserRepository;
+import org.example.user.client.AlarmClientManager;
+import org.example.user.service.dto.response.NotificationExistServiceResponse;
+import org.example.user.service.dto.response.NotificationPaginationResponse.NotificationInfoResponse;
+import org.example.user.service.dto.response.NotificationServiceResponse;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserAlarmService {
+
+    private final UserRepository userRepository;
+    private final ShowRepository showRepository;
+    private final AlarmClientManager alarmClientManager;
+
+    public NotificationExistServiceResponse getNotificationExist(UUID userId) {
+        String userFcmToken = findUserFcmTokenById(userId);
+
+        return alarmClientManager.getNotificationExist(userFcmToken);
+    }
+
+    public NotificationServiceResponse findNotifications(UUID userId, UUID cursorId,
+        LocalDateTime cursorValue, int size) {
+        String userFcmToken = findUserFcmTokenById(userId);
+
+        var response = alarmClientManager.getNotificationPagination(userFcmToken, cursorId,
+            cursorValue, size);
+        if (response != null) {
+            List<UUID> showIdsByAlarm = response.data().stream()
+                .map(NotificationInfoResponse::showId)
+                .toList();
+            List<Show> shows = showRepository.findShowsByIdInAndIsDeletedFalse(showIdsByAlarm);
+
+            return NotificationServiceResponse.of(response, shows);
+        }
+
+        return NotificationServiceResponse.noneData();
+    }
+
+    private String findUserFcmTokenById(UUID userId) {
+        return userRepository.findUserFcmTokensByUserId(userId)
+            .orElseThrow(NoSuchElementException::new);
+    }
+}

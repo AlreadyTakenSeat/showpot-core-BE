@@ -9,6 +9,7 @@ public class UserFixture {
         return User.builder()
             .nickname(RandomNickname.makeRandomNickName())
             .fcmToken("testFcmToken")
+            .profileUrl("testProfileUrl")
             .build();
     }
 }

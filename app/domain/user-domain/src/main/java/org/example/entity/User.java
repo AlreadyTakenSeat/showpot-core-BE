@@ -43,13 +43,15 @@ public class User extends BaseEntity {
     @Builder
     public User(
         String nickname,
-        String fcmToken
+        String fcmToken,
+        String profileUrl
     ) {
         this.nickname = nickname;
         this.birth = LocalDate.of(0, 1, 1);
         this.fcmToken = fcmToken;
         this.userGender = UserGender.NOT_CHOSEN;
         this.userRole = UserRole.USER;
+        this.profileUrl = profileUrl;
     }
 
     public boolean isChangedFcmToken(String fcmToken) {

@@ -12,8 +12,8 @@ import org.example.message.GenreSubscriptionInfraMessage;
 import org.example.message.ShowRelationArtistAndGenreInfraMessage;
 import org.example.message.TicketingReservationInfraMessage;
 import org.example.metric.MessageQueuePubMonitored;
-import org.example.pub.UserFcmMessage;
-import org.example.pub.UserMessagePublisher;
+import org.example.user.pub.UserFcmMessage;
+import org.example.user.pub.UserMessagePublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
