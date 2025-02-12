@@ -85,7 +85,7 @@ public class UserServiceTest {
         userService.login(request);
 
         // then
-        verify(jwtGenerator, times(1)).generate(any(UserParam.class), any(Date.class));  // 매처 사용
+        verify(jwtGenerator, times(1)).generate(any(UserParam.class), any(Date.class));
     }
 
 
