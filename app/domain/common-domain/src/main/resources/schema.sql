@@ -228,6 +228,7 @@ create table report (
     comment_id  uuid         not null,
     user_id     uuid         not null,
     report_type varchar(255) not null check (report_type in ('GRAFFITI','PORNOGRAPHY','COMMERCIAL_AD','IMPERSONATION','PROFANITY','ETC','BLOCKING')),
+    direct_input varchar(255),
     primary key (id)
 );
 

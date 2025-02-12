@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         String errorId = UUID.randomUUID().toString();
         ErrorResponse response = ErrorResponse.messageCustomErrorResponseBuilder()
             .errorId(errorId)
-            .message(e.getMessage())
+            .message(GlobalError.ELEMENT_NOT_FOUND.getClientMessage())
             .error(GlobalError.ELEMENT_NOT_FOUND)
             .build();
 

@@ -1,20 +1,26 @@
 package com.example.comment.controller;
 
-import com.example.comment.controller.dto.CommentReportApiRequest;
-import com.example.comment.controller.dto.CommentWriteApiRequest;
+import com.example.comment.controller.dto.param.CommentApiParam;
+import com.example.comment.controller.dto.request.CommentPaginationApiRequest;
+import com.example.comment.controller.dto.request.CommentReportApiRequest;
+import com.example.comment.controller.dto.request.CommentWriteApiRequest;
 import com.example.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.dto.response.CursorApiResponse;
+import org.example.dto.response.PaginationApiResponse;
 import org.example.dto.response.SuccessResponse;
 import org.example.dto.response.SuccessResponse.Empty;
 import org.example.security.dto.AuthenticatedInfo;
-import org.example.util.ValidatorUser;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/comment")
+@RequestMapping("/api/v1/comments")
 @Tag(name = "댓글")
 public class CommentController {
 
@@ -37,8 +43,7 @@ public class CommentController {
         @AuthenticationPrincipal AuthenticatedInfo info,
         @RequestBody @Valid CommentWriteApiRequest request
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.writeComment(request.toServiceRequest(), userId);
+        commentService.writeComment(request.toServiceRequest(), info.userId());
 
         return SuccessResponse.emptyData();
     }
@@ -50,8 +55,7 @@ public class CommentController {
         @AuthenticationPrincipal AuthenticatedInfo info,
         @PathVariable UUID commentId
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.deleteComment(commentId, userId);
+        commentService.deleteComment(commentId, info.userId());
 
         return SuccessResponse.emptyData();
     }
@@ -64,9 +68,39 @@ public class CommentController {
         @PathVariable UUID commentId,
         @RequestBody @Valid CommentReportApiRequest request
     ) {
-        UUID userId = ValidatorUser.getUserId(info);
-        commentService.reportComment(request.toServiceRequest(), commentId, userId);
+        commentService.reportComment(request.toServiceRequest(), commentId, info.userId());
 
         return SuccessResponse.emptyData();
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{refId}")
+    @Operation(summary = "댓글 목록 조회")
+    public SuccessResponse<PaginationApiResponse<CommentApiParam>> readComments(
+        @AuthenticationPrincipal AuthenticatedInfo info,
+        @PathVariable UUID refId,
+        @Valid @ParameterObject CommentPaginationApiRequest request
+    ) {
+        var commentPagination = commentService.getComments(request.toServiceRequest(refId, info.userId()));
+
+        CursorApiResponse cursor;
+        if (request.isInverted()) {
+            cursor = Optional.ofNullable(CursorApiResponse.getFirstElement(commentPagination.data()))
+                .map(element -> CursorApiResponse.toCursorResponse(element.commentId(), element.createdAt()))
+                .orElse(CursorApiResponse.noneCursor());
+        } else {
+            cursor = Optional.ofNullable(CursorApiResponse.getLastElement(commentPagination.data()))
+                .map(element -> CursorApiResponse.toCursorResponse(element.commentId(), element.createdAt()))
+                .orElse(CursorApiResponse.noneCursor());
+        }
+
+        return SuccessResponse.ok(
+            PaginationApiResponse.<CommentApiParam>builder()
+                .data(commentPagination.data())
+                .hasNext(commentPagination.hasNext())
+                .cursor(cursor)
+                .build()
+        );
+    }
+
 }
