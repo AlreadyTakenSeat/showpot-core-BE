@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.file.property.FileRootUrlProperty;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class FileLocalComponent implements FileComponent {
     }
 
     @Override
+    @Cacheable(value = "profileImages", key = "#id")
     public Optional<Resource> getProfileResource(int id) {
         Resource resource;
         try {
