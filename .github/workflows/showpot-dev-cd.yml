@@ -44,6 +44,7 @@ jobs:
           spotify.client-id: ${{ secrets.SPOTIFY_CLIENT_ID }}
           spotify.client-secret: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           alarm.api-url: ${{ secrets.ALARM_SERVER_API_URL }}
+          file.root-url: ${{ secrets.FILE_ROOT_API_URL_DEV }}
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -Dspring.profiles.active=dev
@@ -87,7 +88,7 @@ jobs:
           script: |
             cd /home/ec2-user/deployment/
             docker-compose -f docker-compose-dev.yml down
-            docker system prune -f --volumes
+            docker system prune -a -f
             docker-compose -f docker-compose-dev.yml up -d --build
 
       - name: Remove Github Actions IP from Security Group

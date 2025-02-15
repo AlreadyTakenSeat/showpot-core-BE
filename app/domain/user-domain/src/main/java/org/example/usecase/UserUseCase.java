@@ -1,5 +1,6 @@
 package org.example.usecase;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,6 @@ public class UserUseCase {
         return userRepository.save(user);
     }
 
-    @Transactional
     public User findUser(LoginDomainRequest request) {
         SocialLogin socialLogin = socialLoginRepository.findBySocialLoginTypeAndIdentifier(
             request.socialLoginType(),
@@ -43,8 +43,6 @@ public class UserUseCase {
         if (user.isWithdrew()) {
             throw new BusinessException(UserError.WITHDREW_USER_LOGIN);
         }
-
-        user.dirtyCheckFcmToken(request.fcmToken());
 
         return user;
     }
@@ -67,5 +65,14 @@ public class UserUseCase {
 
     public User findByIdOrElseThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Transactional
+    public void updateFcmToken(User user, String fcmToken) {
+        user.updateFcmToken(fcmToken);
+    }
+
+    public List<User> findAllByUserIds(List<UUID> userIds) {
+        return userRepository.findAllById(userIds);
     }
 }

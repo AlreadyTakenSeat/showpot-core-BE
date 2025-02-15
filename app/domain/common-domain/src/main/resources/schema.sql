@@ -21,6 +21,8 @@ drop table if exists show_ticketing_time cascade;
 drop table if exists social_login cascade;
 drop table if exists ticketing_alert cascade;
 drop table if exists users cascade;
+drop table if exists comment cascade;
+drop table if exists report cascade;
 
 create table admin
 (
@@ -192,15 +194,41 @@ create table ticketing_alert
 
 create table users
 (
-    id         uuid          not null,
-    created_at timestamp(3)  not null,
-    updated_at timestamp(3)  not null,
-    is_deleted boolean       not null,
-    birth      date          not null,
-    fcm_token  varchar(1000) not null,
-    gender     varchar(255)  not null check (gender in ('MAN', 'WOMAN', 'NOT_CHOSEN')),
-    nickname   varchar(255)  not null unique,
-    role       varchar(255)  not null check (role in ('GUEST', 'USER', 'ADMIN')),
+    id             uuid          not null,
+    created_at     timestamp(3)  not null,
+    updated_at     timestamp(3)  not null,
+    is_deleted     boolean       not null,
+    birth          date          not null,
+    fcm_token      varchar(1000) not null,
+    gender         varchar(255)  not null check (gender in ('MAN', 'WOMAN', 'NOT_CHOSEN')),
+    nickname       varchar(255)  not null unique,
+    role           varchar(255)  not null check (role in ('GUEST', 'USER', 'ADMIN')),
+    profile_url    varchar(255),
+    primary key (id)
+);
+
+create table comment (
+    id           UUID         not null,
+    is_deleted   boolean      not null,
+    created_at   timestamp(3) not null,
+    updated_at   timestamp(3) not null,
+    parent_id    uuid,
+    ref_id       uuid         not null,
+    user_id      uuid         not null,
+    comment_type varchar(255) not null check (comment_type in ('SHOW')),
+    content      varchar(255) not null,
+    primary key (id)
+);
+
+create table report (
+    id          uuid         not null,
+    is_deleted  boolean      not null,
+    created_at  timestamp(3) not null,
+    updated_at  timestamp(3) not null,
+    comment_id  uuid         not null,
+    user_id     uuid         not null,
+    report_type varchar(255) not null check (report_type in ('GRAFFITI','PORNOGRAPHY','COMMERCIAL_AD','IMPERSONATION','PROFANITY','ETC','BLOCKING')),
+    direct_input varchar(255),
     primary key (id)
 );
 

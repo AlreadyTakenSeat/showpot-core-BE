@@ -1,7 +1,7 @@
 package org.example.fixture.dto;
 
-import org.example.service.dto.request.LoginServiceRequest;
-import org.example.vo.SocialLoginApiType;
+import org.example.user.service.dto.request.LoginServiceRequest;
+import org.example.user.vo.SocialLoginApiType;
 
 public class UserRequestDtoFixture {
 

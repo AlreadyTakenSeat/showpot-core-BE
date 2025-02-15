@@ -37,22 +37,25 @@ public class User extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
 
+    @Column(name = "profile_url")
+    private String profileUrl;
+
     @Builder
     public User(
         String nickname,
-        String fcmToken
+        String fcmToken,
+        String profileUrl
     ) {
         this.nickname = nickname;
         this.birth = LocalDate.of(0, 1, 1);
         this.fcmToken = fcmToken;
         this.userGender = UserGender.NOT_CHOSEN;
         this.userRole = UserRole.USER;
+        this.profileUrl = profileUrl;
     }
 
-    public void dirtyCheckFcmToken(String fcmToken) {
-        if (fcmToken != null && !fcmToken.equals(this.fcmToken)) {
-            this.fcmToken = fcmToken;
-        }
+    public boolean isChangedFcmToken(String fcmToken) {
+        return fcmToken != null && !fcmToken.equals(this.fcmToken);
     }
 
     public boolean isWithdrew() {
@@ -61,5 +64,9 @@ public class User extends BaseEntity {
 
     public void changeNickname() {
         this.nickname = RandomNickname.makeRandomNickName();
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
