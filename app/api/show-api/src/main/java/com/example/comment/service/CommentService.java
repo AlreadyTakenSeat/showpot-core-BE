@@ -2,6 +2,7 @@ package com.example.comment.service;
 
 import com.example.comment.controller.dto.param.CommentApiParam;
 import com.example.comment.error.CommentError;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -69,8 +70,9 @@ public class CommentService {
                     .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
                     .build();
             })
-            .toList();
+            .collect(Collectors.toList());
 
+        Collections.reverse(commentApiParams);
         return PaginationServiceResponse.of(commentApiParams, commentsByPagination.hasNext());
     }
 }
