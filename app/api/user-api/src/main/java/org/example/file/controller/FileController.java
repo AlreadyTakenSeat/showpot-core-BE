@@ -21,8 +21,7 @@ public class FileController {
 
     @GetMapping("/profile-image/{id}")
     public ResponseEntity<Resource> getUserProfileImage(@PathVariable int id) {
-        Resource resource = fileLocalComponent.getProfileResource(id)
-            .orElseThrow(IllegalArgumentException::new);
+        Resource resource = fileLocalComponent.getProfileResource(id);
 
         return ResponseEntity.ok()
             .contentType(MediaType.IMAGE_PNG)

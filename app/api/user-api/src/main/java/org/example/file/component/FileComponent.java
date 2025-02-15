@@ -7,5 +7,5 @@ public interface FileComponent {
 
     Optional<String> getImageUrl(int id);
 
-    Optional<Resource> getProfileResource(int id);
+    Resource getProfileResource(int id);
 }

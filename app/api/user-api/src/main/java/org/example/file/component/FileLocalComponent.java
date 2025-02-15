@@ -36,7 +36,7 @@ public class FileLocalComponent implements FileComponent {
 
     @Override
     @Cacheable(value = "profileImages", key = "#id")
-    public Optional<Resource> getProfileResource(int id) {
+    public Resource getProfileResource(int id) {
         Resource resource;
         try {
             String resourcePath = IMAGE_RESOURCE_LOCATION + id + IMAGE_EXTENSION;
@@ -44,13 +44,13 @@ public class FileLocalComponent implements FileComponent {
                 Objects.requireNonNull(getClass().getClassLoader().getResource(resourcePath))
                     .toURI());
             if (!resource.exists() && !resource.isReadable()) {
-                return Optional.empty();
+                throw new IllegalArgumentException();
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
 
-        return Optional.of(resource);
+        return resource;
     }
 
 
