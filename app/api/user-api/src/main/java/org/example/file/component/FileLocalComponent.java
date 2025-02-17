@@ -1,5 +1,6 @@
 package org.example.file.component;
 
+import java.io.FileNotFoundException;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -36,22 +37,26 @@ public class FileLocalComponent implements FileComponent {
 
     @Override
     @Cacheable(value = "profileImages", key = "#id")
-    public Resource getProfileResource(int id) {
-        Resource resource;
+    public byte[] getProfileImageBytes(int id) {
+        String resourcePath = IMAGE_RESOURCE_LOCATION + id + IMAGE_EXTENSION;
+
+        return convertByteArrayByResourcePath(resourcePath);
+    }
+
+    private byte[] convertByteArrayByResourcePath(String resourcePath) {
         try {
-            String resourcePath = IMAGE_RESOURCE_LOCATION + id + IMAGE_EXTENSION;
-            resource = new UrlResource(
+            Resource resource = new UrlResource(
                 Objects.requireNonNull(getClass().getClassLoader().getResource(resourcePath))
                     .toURI());
-            if (!resource.exists() && !resource.isReadable()) {
-                throw new IllegalArgumentException();
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new FileNotFoundException();
             }
+
+            return resource.getInputStream().readAllBytes();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
-
-        return resource;
     }
-
 
 }
