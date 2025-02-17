@@ -86,11 +86,11 @@ public class CommentController {
         CursorApiResponse cursor;
         if (request.isInverted()) {
             cursor = Optional.ofNullable(CursorApiResponse.getLastElement(commentPagination.data()))
-                .map(element -> CursorApiResponse.toCursorResponse(element.commentId(), element.createdAt()))
+                .map(element -> CursorApiResponse.toCursorId(element.commentId()))
                 .orElse(CursorApiResponse.noneCursor());
         } else {
             cursor = Optional.ofNullable(CursorApiResponse.getFirstElement(commentPagination.data()))
-                .map(element -> CursorApiResponse.toCursorResponse(element.commentId(), element.createdAt()))
+                .map(element -> CursorApiResponse.toCursorId(element.commentId()))
                 .orElse(CursorApiResponse.noneCursor());
         }
 
