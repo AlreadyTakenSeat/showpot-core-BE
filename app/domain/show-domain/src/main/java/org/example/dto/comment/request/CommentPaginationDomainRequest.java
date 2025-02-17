@@ -1,6 +1,5 @@
 package org.example.dto.comment.request;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import org.example.vo.CommentType;
@@ -12,7 +11,6 @@ public record CommentPaginationDomainRequest(
     UUID userId,
     boolean isInverted,
     UUID cursorId,
-    LocalDateTime cursorValue,
     Integer size
 ) {
 
