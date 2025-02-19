@@ -1,7 +1,9 @@
 package org.example.file.controller;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.example.file.component.FileLocalComponent;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -21,14 +23,14 @@ public class FileController {
 
     @GetMapping("/profile-image/{id}")
     public ResponseEntity<Resource> getUserProfileImage(@PathVariable int id) {
-        Resource resource = fileLocalComponent.getProfileResource(id);
+        byte[] fileBytes = fileLocalComponent.getProfileImageBytes(id);
 
         return ResponseEntity.ok()
             .contentType(MediaType.IMAGE_PNG)
             .header(
                 HttpHeaders.CONTENT_DISPOSITION,
-                ContentDisposition.inline().filename(resource.getFilename()).toString())
-            .body(resource);
+                ContentDisposition.inline().filename(Arrays.toString(fileBytes)).toString())
+            .body(new ByteArrayResource(fileBytes));
     }
 
 }
