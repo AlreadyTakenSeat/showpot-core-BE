@@ -81,16 +81,18 @@ public class CommentController {
         @PathVariable UUID refId,
         @Valid @ParameterObject CommentPaginationApiRequest request
     ) {
-        var commentPagination = commentService.getComments(
-            request.toServiceRequest(refId, info.userId()));
+        var commentPagination = commentService.getComments(request.toServiceRequest(refId, info.userId()));
 
-        CursorApiResponse cursor = CursorApiResponse.toCursorResponse(
-            Optional.ofNullable(CursorApiResponse.getFirstElement(commentPagination.data()))
-                .map(CommentApiParam::commentId)
-                .orElse(null),
-            Optional.ofNullable(CursorApiResponse.getLastElement(commentPagination.data()))
-                .map(CommentApiParam::commentId)
-                .orElse(null), null);
+        CursorApiResponse cursor;
+        if (request.isInverted()) {
+            cursor = Optional.ofNullable(CursorApiResponse.getLastElement(commentPagination.data()))
+                .map(element -> CursorApiResponse.toCursorId(element.commentId()))
+                .orElse(CursorApiResponse.noneCursor());
+        } else {
+            cursor = Optional.ofNullable(CursorApiResponse.getFirstElement(commentPagination.data()))
+                .map(element -> CursorApiResponse.toCursorId(element.commentId()))
+                .orElse(CursorApiResponse.noneCursor());
+        }
 
         return SuccessResponse.ok(
             PaginationApiResponse.<CommentApiParam>builder()
