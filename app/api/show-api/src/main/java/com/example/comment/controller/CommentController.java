@@ -39,13 +39,15 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping
     @Operation(summary = "댓글 작성")
-    public SuccessResponse<Empty> writeComment(
+    public SuccessResponse<CursorApiResponse> writeComment(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @RequestBody @Valid CommentWriteApiRequest request
     ) {
-        commentService.writeComment(request.toServiceRequest(), info.userId());
-
-        return SuccessResponse.emptyData();
+        return SuccessResponse.ok(
+            CursorApiResponse.toCursorId(
+            commentService.writeComment(request.toServiceRequest(), info.userId())
+            )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -81,7 +83,8 @@ public class CommentController {
         @PathVariable UUID refId,
         @Valid @ParameterObject CommentPaginationApiRequest request
     ) {
-        var commentPagination = commentService.getComments(request.toServiceRequest(refId, info.userId()));
+        var commentPagination = commentService.getComments(
+            request.toServiceRequest(refId, info.userId()));
 
         CursorApiResponse cursor;
         if (request.isInverted()) {
@@ -89,7 +92,8 @@ public class CommentController {
                 .map(element -> CursorApiResponse.toCursorId(element.commentId()))
                 .orElse(CursorApiResponse.noneCursor());
         } else {
-            cursor = Optional.ofNullable(CursorApiResponse.getFirstElement(commentPagination.data()))
+            cursor = Optional.ofNullable(
+                    CursorApiResponse.getFirstElement(commentPagination.data()))
                 .map(element -> CursorApiResponse.toCursorId(element.commentId()))
                 .orElse(CursorApiResponse.noneCursor());
         }
