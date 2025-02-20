@@ -3,6 +3,7 @@ package com.example.comment.service;
 import com.example.comment.controller.dto.param.CommentApiParam;
 import com.example.comment.error.CommentError;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,8 +28,8 @@ public class CommentService {
     private final CommentUseCase commentUseCase;
     private final UserUseCase userUseCase;
 
-    public void writeComment(CommentWriteDomainRequest request, UUID userId) {
-        commentUseCase.writeComment(request, userId);
+    public UUID writeComment(CommentWriteDomainRequest request, UUID userId) {
+        return commentUseCase.writeComment(request, userId).getId();
     }
 
     public void deleteComment(UUID commentId, UUID userId) {
@@ -57,20 +58,23 @@ public class CommentService {
         Map<UUID, User> userMap = users.stream()
             .collect(Collectors.toMap(User::getId, user -> user));
 
-        List<CommentApiParam> commentApiParams = commentsByPagination.data().stream()
-            .map(comment -> {
-                User user = userMap.get(comment.userId());
-                return CommentApiParam.builder()
-                    .commentId(comment.commentId())
-                    .parentId(comment.parentId())
-                    .content(comment.content())
-                    .isBlocked(comment.isBlocked())
-                    .profileURL(user.getProfileUrl() == null ? null : user.getProfileUrl())
-                    .userName(user.getNickname() == null ? null : user.getNickname())
-                    .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
-                    .build();
-            })
-            .collect(Collectors.toList());
+        List<CommentApiParam> commentApiParams = new LinkedList<>();
+        for (CommentDomainResponse comment : commentsByPagination.data()) {
+            User user = userMap.get(comment.userId());
+            if (user != null) {
+                commentApiParams.add(
+                    CommentApiParam.builder()
+                        .commentId(comment.commentId())
+                        .parentId(comment.parentId())
+                        .content(comment.content())
+                        .isBlocked(comment.isBlocked())
+                        .profileURL(user.getProfileUrl())
+                        .userName(user.getNickname())
+                        .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
+                        .build()
+                );
+            }
+        }
 
         Collections.reverse(commentApiParams);
         return PaginationServiceResponse.of(commentApiParams, commentsByPagination.hasNext());

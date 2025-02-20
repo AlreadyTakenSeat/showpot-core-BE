@@ -13,6 +13,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 
 @RestControllerAdvice
@@ -48,7 +49,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<ErrorResponse> handleNoSuchElementException(final NoSuchElementException e) {
+    protected ResponseEntity<ErrorResponse> handleNoSuchElementException(
+        final NoSuchElementException e) {
         String errorId = UUID.randomUUID().toString();
         ErrorResponse response = ErrorResponse.messageCustomErrorResponseBuilder()
             .errorId(errorId)
@@ -128,5 +130,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(response);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException e) {
+        String errorId = UUID.randomUUID().toString();
+        return ResponseEntity.badRequest().body(
+            ErrorResponse.messageCustomErrorResponseBuilder()
+                .errorId(errorId)
+                .message(e.getMessage())
+                .error(GlobalError.INPUT_INVALID_VALUE)
+                .build()
+        );
     }
 }
