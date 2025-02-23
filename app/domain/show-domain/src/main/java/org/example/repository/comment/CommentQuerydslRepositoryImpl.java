@@ -66,18 +66,18 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             return wherePredicate;
         }
 
-        if (request.isInverted()) {
-            return wherePredicate.and(createInvertedPredicate(request.cursorId()));
+        if (!request.isInverted()) {
+            return wherePredicate.and(createRecentPredicate(request.cursorId()));
         }
 
-        return wherePredicate.and(createForwardPredicate(request.cursorId()));
+        return wherePredicate.and(createPastPredicate(request.cursorId()));
     }
 
     private BooleanExpression getDefaultPredicateExpression(CommentType commentType, UUID refId) {
         return comment.commentType.eq(commentType).and(comment.refId.eq(refId));
     }
 
-    private BooleanExpression createInvertedPredicate(UUID cursorId) {
+    private BooleanExpression createRecentPredicate(UUID cursorId) {
         Tuple cursor = getCursor(cursorId);
 
         LocalDateTime cursorValue = cursor.get(comment.createdAt);
@@ -88,7 +88,7 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             .and(comment.id.gt(cursorIdValue));
     }
 
-    private BooleanExpression createForwardPredicate(UUID cursorId) {
+    private BooleanExpression createPastPredicate(UUID cursorId) {
         Tuple cursor = getCursor(cursorId);
 
         LocalDateTime cursorValue = cursor.get(comment.createdAt);
