@@ -76,7 +76,9 @@ public class CommentService {
             }
         }
 
-        Collections.reverse(commentApiParams);
+        if (request.isInverted()) {
+            Collections.reverse(commentApiParams);
+        }
         return PaginationServiceResponse.of(commentApiParams, commentsByPagination.hasNext());
     }
 }
