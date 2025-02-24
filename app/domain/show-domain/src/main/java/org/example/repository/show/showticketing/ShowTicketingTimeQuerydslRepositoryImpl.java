@@ -103,8 +103,10 @@ public class ShowTicketingTimeQuerydslRepositoryImpl implements
         if (request.cursorId() != null && request.cursorValue() != null) {
             wherePredicate = wherePredicate.and(
                 showTicketingTime.ticketingAt.gt(request.cursorValue())
-                    .or(showTicketingTime.ticketingAt.eq(request.cursorValue())
-                        .and(showTicketingTime.id.gt(request.cursorId())))
+                    .or(
+                        showTicketingTime.ticketingAt.eq(request.cursorValue())
+                        .and(showTicketingTime.id.gt(request.cursorId()))
+                    )
             );
 
             return wherePredicate;
