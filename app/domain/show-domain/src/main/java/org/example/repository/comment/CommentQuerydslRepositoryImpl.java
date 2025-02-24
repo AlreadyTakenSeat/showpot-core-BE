@@ -5,6 +5,7 @@ import static org.example.entity.comment.QComment.comment;
 import static org.example.entity.comment.QReport.report;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -46,7 +47,7 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             .from(comment)
             .leftJoin(report).on(report.commentId.eq(comment.id))
             .where(getWhereClauseInCursorPagination(request))
-            .orderBy(comment.createdAt.desc(), comment.id.desc())
+            .orderBy(getOrderSpecifier(request.isInverted()))
             .limit(request.size() + 1)
             .fetch();
 
@@ -84,8 +85,10 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
         UUID cursorIdValue = cursor.get(comment.id);
 
         return comment.createdAt.gt(cursorValue)
-            .or(comment.createdAt.eq(cursorValue))
-            .and(comment.id.gt(cursorIdValue));
+            .or(
+                comment.createdAt.eq(cursorValue)
+                    .and(comment.id.gt(cursorIdValue))
+            );
     }
 
     private BooleanExpression createPastPredicate(UUID cursorId) {
@@ -95,8 +98,24 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
         UUID cursorIdValue = cursor.get(comment.id);
 
         return comment.createdAt.lt(cursorValue)
-            .or(comment.createdAt.eq(cursorValue))
-            .and(comment.id.lt(cursorIdValue));
+            .or(
+                comment.createdAt.eq(cursorValue)
+                    .and(comment.id.lt(cursorIdValue))
+            );
+    }
+
+    private OrderSpecifier<?>[] getOrderSpecifier(boolean isInverted) {
+        if (isInverted) {
+            return new OrderSpecifier<?>[]{
+                comment.createdAt.desc(),
+                comment.id.desc()
+            };
+        }
+
+        return new OrderSpecifier<?>[]{
+            comment.createdAt.asc(),
+            comment.id.asc()
+        };
     }
 
     private Tuple getCursor(UUID cursorId) {
