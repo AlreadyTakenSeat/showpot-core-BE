@@ -47,7 +47,7 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             .from(comment)
             .leftJoin(report).on(report.commentId.eq(comment.id))
             .where(getWhereClauseInCursorPagination(request))
-            .orderBy(getOrderSpecifier(request.isInverted()))
+            .orderBy(getOrderSpecifier(request.isInverted(), request.cursorId()))
             .limit(request.size() + 1)
             .fetch();
 
@@ -104,7 +104,14 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             );
     }
 
-    private OrderSpecifier<?>[] getOrderSpecifier(boolean isInverted) {
+    private OrderSpecifier<?>[] getOrderSpecifier(boolean isInverted, UUID cursorId) {
+        if (cursorId == null) {
+            return new OrderSpecifier<?>[]{
+                comment.createdAt.desc(),
+                comment.id.desc()
+            };
+        }
+
         if (isInverted) {
             return new OrderSpecifier<?>[]{
                 comment.createdAt.desc(),

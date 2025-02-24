@@ -76,7 +76,7 @@ public class CommentService {
             }
         }
 
-        if (request.isInverted()) {
+        if (request.isInverted() || request.cursorId() == null) {
             Collections.reverse(commentApiParams);
         }
         return PaginationServiceResponse.of(commentApiParams, commentsByPagination.hasNext());
