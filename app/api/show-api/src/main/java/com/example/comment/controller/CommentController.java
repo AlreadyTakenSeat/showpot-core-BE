@@ -8,6 +8,7 @@ import com.example.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,24 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping
     @Operation(summary = "댓글 작성")
-    public SuccessResponse<CursorApiResponse> writeComment(
+    public SuccessResponse<PaginationApiResponse<CommentApiParam>> writeComment(
         @AuthenticationPrincipal AuthenticatedInfo info,
         @RequestBody @Valid CommentWriteApiRequest request
     ) {
+        var commentApiParams = List.of(
+            commentService.writeComment(request.toServiceRequest(), info.userId()));
+
+        CursorApiResponse cursor = Optional.ofNullable(
+                CursorApiResponse.getFirstElement(commentApiParams))
+            .map(element -> CursorApiResponse.toCursorId(element.commentId()))
+            .orElse(CursorApiResponse.noneCursor());
+
         return SuccessResponse.ok(
-            CursorApiResponse.toCursorId(
-            commentService.writeComment(request.toServiceRequest(), info.userId())
-            )
+            PaginationApiResponse.<CommentApiParam>builder()
+                .data(commentApiParams)
+                .hasNext(false)
+                .cursor(cursor)
+                .build()
         );
     }
 

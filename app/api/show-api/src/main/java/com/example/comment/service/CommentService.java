@@ -15,6 +15,7 @@ import org.example.dto.comment.request.CommentWriteDomainRequest;
 import org.example.dto.comment.response.CommentDomainResponse;
 import org.example.dto.response.PaginationServiceResponse;
 import org.example.entity.User;
+import org.example.entity.comment.Comment;
 import org.example.exception.BusinessException;
 import org.example.usecase.CommentUseCase;
 import org.example.usecase.UserUseCase;
@@ -28,8 +29,19 @@ public class CommentService {
     private final CommentUseCase commentUseCase;
     private final UserUseCase userUseCase;
 
-    public UUID writeComment(CommentWriteDomainRequest request, UUID userId) {
-        return commentUseCase.writeComment(request, userId).getId();
+    public CommentApiParam writeComment(CommentWriteDomainRequest request, UUID userId) {
+        Comment comment = commentUseCase.writeComment(request, userId);
+        User user = userUseCase.findByIdOrElseThrow(userId);
+
+        return CommentApiParam.builder()
+            .commentId(comment.getId())
+            .parentId(comment.getParentId())
+            .content(comment.getContent())
+            .isBlocked(false)
+            .profileURL(user.getProfileUrl())
+            .userName(user.getNickname())
+            .createdAt(DateTimeUtil.formatDateTime(comment.getCreatedAt()))
+            .build();
     }
 
     public void deleteComment(UUID commentId, UUID userId) {
