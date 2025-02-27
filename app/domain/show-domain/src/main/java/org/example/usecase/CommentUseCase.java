@@ -22,9 +22,11 @@ public class CommentUseCase {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public void writeComment(CommentWriteDomainRequest request, UUID userId) {
+    public Comment writeComment(CommentWriteDomainRequest request, UUID userId) {
         Comment comment = request.toComment(userId);
         commentRepository.save(comment);
+
+        return comment;
     }
 
     @Transactional

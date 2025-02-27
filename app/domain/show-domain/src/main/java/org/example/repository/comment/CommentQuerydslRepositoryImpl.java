@@ -5,6 +5,7 @@ import static org.example.entity.comment.QComment.comment;
 import static org.example.entity.comment.QReport.report;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -46,7 +47,7 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             .from(comment)
             .leftJoin(report).on(report.commentId.eq(comment.id))
             .where(getWhereClauseInCursorPagination(request))
-            .orderBy(comment.createdAt.desc(), comment.id.desc())
+            .orderBy(getOrderSpecifier(request.isInverted(), request.cursorId()))
             .limit(request.size() + 1)
             .fetch();
 
@@ -66,37 +67,62 @@ public class CommentQuerydslRepositoryImpl implements CommentQuerydslRepository 
             return wherePredicate;
         }
 
-        if (request.isInverted()) {
-            return wherePredicate.and(createInvertedPredicate(request.cursorId()));
+        if (!request.isInverted()) {
+            return wherePredicate.and(createRecentPredicate(request.cursorId()));
         }
 
-        return wherePredicate.and(createForwardPredicate(request.cursorId()));
+        return wherePredicate.and(createPastPredicate(request.cursorId()));
     }
 
     private BooleanExpression getDefaultPredicateExpression(CommentType commentType, UUID refId) {
         return comment.commentType.eq(commentType).and(comment.refId.eq(refId));
     }
 
-    private BooleanExpression createInvertedPredicate(UUID cursorId) {
+    private BooleanExpression createRecentPredicate(UUID cursorId) {
         Tuple cursor = getCursor(cursorId);
 
         LocalDateTime cursorValue = cursor.get(comment.createdAt);
         UUID cursorIdValue = cursor.get(comment.id);
 
         return comment.createdAt.gt(cursorValue)
-            .or(comment.createdAt.eq(cursorValue))
-            .and(comment.id.gt(cursorIdValue));
+            .or(
+                comment.createdAt.eq(cursorValue)
+                    .and(comment.id.gt(cursorIdValue))
+            );
     }
 
-    private BooleanExpression createForwardPredicate(UUID cursorId) {
+    private BooleanExpression createPastPredicate(UUID cursorId) {
         Tuple cursor = getCursor(cursorId);
 
         LocalDateTime cursorValue = cursor.get(comment.createdAt);
         UUID cursorIdValue = cursor.get(comment.id);
 
         return comment.createdAt.lt(cursorValue)
-            .or(comment.createdAt.eq(cursorValue))
-            .and(comment.id.lt(cursorIdValue));
+            .or(
+                comment.createdAt.eq(cursorValue)
+                    .and(comment.id.lt(cursorIdValue))
+            );
+    }
+
+    private OrderSpecifier<?>[] getOrderSpecifier(boolean isInverted, UUID cursorId) {
+        if (cursorId == null) {
+            return new OrderSpecifier<?>[]{
+                comment.createdAt.desc(),
+                comment.id.desc()
+            };
+        }
+
+        if (isInverted) {
+            return new OrderSpecifier<?>[]{
+                comment.createdAt.desc(),
+                comment.id.desc()
+            };
+        }
+
+        return new OrderSpecifier<?>[]{
+            comment.createdAt.asc(),
+            comment.id.asc()
+        };
     }
 
     private Tuple getCursor(UUID cursorId) {

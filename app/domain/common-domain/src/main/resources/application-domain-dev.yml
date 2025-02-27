@@ -14,7 +14,10 @@ spring:
     username: ${APPLICATION_DATASOURCE_USERNAME}
     password: ${APPLICATION_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
   sql:
     init:
       mode: always
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

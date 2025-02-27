@@ -188,8 +188,10 @@ public class ShowQuerydslRepositoryImpl implements ShowQuerydslRepository {
         UUID cursorIdValue = cursor.get(showTicketingTime.id);
 
         return showTicketingTime.ticketingAt.gt(cursorValue)
-            .or(showTicketingTime.ticketingAt.eq(cursorValue)
-                .and(showTicketingTime.id.gt(cursorIdValue)));
+            .or(
+                showTicketingTime.ticketingAt.eq(cursorValue)
+                .and(showTicketingTime.id.gt(cursorIdValue))
+            );
     }
 
     private BooleanExpression createPopularPredicate(UUID cursorId) {
@@ -203,8 +205,10 @@ public class ShowQuerydslRepositoryImpl implements ShowQuerydslRepository {
         UUID cursorIdValue = cursor.get(show.id);
 
         return show.viewCount.lt(cursorValue)
-            .or(show.viewCount.eq(cursorValue)
-                .and(show.id.gt(cursorIdValue)));
+            .or(
+                show.viewCount.eq(cursorValue)
+                .and(show.id.gt(cursorIdValue))
+            );
     }
 
     private OrderSpecifier<?>[] getOrderSpecifier(ShowPaginationDomainRequest request) {

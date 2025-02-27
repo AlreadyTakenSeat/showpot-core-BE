@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 .toString()
                         );
                     },
-                    antMatcher("/admin/login")
+                    antMatcher("/api/**")
                 )
             )
             .authorizeHttpRequests(registry -> registry

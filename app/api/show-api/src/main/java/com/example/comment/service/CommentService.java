@@ -3,6 +3,7 @@ package com.example.comment.service;
 import com.example.comment.controller.dto.param.CommentApiParam;
 import com.example.comment.error.CommentError;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.example.dto.comment.request.CommentWriteDomainRequest;
 import org.example.dto.comment.response.CommentDomainResponse;
 import org.example.dto.response.PaginationServiceResponse;
 import org.example.entity.User;
+import org.example.entity.comment.Comment;
 import org.example.exception.BusinessException;
 import org.example.usecase.CommentUseCase;
 import org.example.usecase.UserUseCase;
@@ -27,8 +29,19 @@ public class CommentService {
     private final CommentUseCase commentUseCase;
     private final UserUseCase userUseCase;
 
-    public void writeComment(CommentWriteDomainRequest request, UUID userId) {
-        commentUseCase.writeComment(request, userId);
+    public CommentApiParam writeComment(CommentWriteDomainRequest request, UUID userId) {
+        Comment comment = commentUseCase.writeComment(request, userId);
+        User user = userUseCase.findByIdOrElseThrow(userId);
+
+        return CommentApiParam.builder()
+            .commentId(comment.getId())
+            .parentId(comment.getParentId())
+            .content(comment.getContent())
+            .isBlocked(false)
+            .profileURL(user.getProfileUrl())
+            .userName(user.getNickname())
+            .createdAt(DateTimeUtil.formatDateTime(comment.getCreatedAt()))
+            .build();
     }
 
     public void deleteComment(UUID commentId, UUID userId) {
@@ -57,22 +70,27 @@ public class CommentService {
         Map<UUID, User> userMap = users.stream()
             .collect(Collectors.toMap(User::getId, user -> user));
 
-        List<CommentApiParam> commentApiParams = commentsByPagination.data().stream()
-            .map(comment -> {
-                User user = userMap.get(comment.userId());
-                return CommentApiParam.builder()
-                    .commentId(comment.commentId())
-                    .parentId(comment.parentId())
-                    .content(comment.content())
-                    .isBlocked(comment.isBlocked())
-                    .profileURL(user.getProfileUrl() == null ? null : user.getProfileUrl())
-                    .userName(user.getNickname() == null ? null : user.getNickname())
-                    .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
-                    .build();
-            })
-            .collect(Collectors.toList());
+        List<CommentApiParam> commentApiParams = new LinkedList<>();
+        for (CommentDomainResponse comment : commentsByPagination.data()) {
+            User user = userMap.get(comment.userId());
+            if (user != null) {
+                commentApiParams.add(
+                    CommentApiParam.builder()
+                        .commentId(comment.commentId())
+                        .parentId(comment.parentId())
+                        .content(comment.content())
+                        .isBlocked(comment.isBlocked())
+                        .profileURL(user.getProfileUrl())
+                        .userName(user.getNickname())
+                        .createdAt(DateTimeUtil.formatDateTime(comment.createdAt()))
+                        .build()
+                );
+            }
+        }
 
-        Collections.reverse(commentApiParams);
+        if (request.isInverted() || request.cursorId() == null) {
+            Collections.reverse(commentApiParams);
+        }
         return PaginationServiceResponse.of(commentApiParams, commentsByPagination.hasNext());
     }
 }
