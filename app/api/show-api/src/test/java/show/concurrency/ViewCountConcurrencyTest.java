@@ -66,12 +66,13 @@ public class ViewCountConcurrencyTest {
         ViewCount viewCount = new ViewCount();
         CountDownLatch doneSignal = new CountDownLatch(executeCount);
         ExecutorService executorService = Executors.newFixedThreadPool(executeCount);
+        Long id = 0L;
 
         //when
         for (int i = 0; i < executeCount; i++) {
             executorService.execute(() -> {
                 try {
-                    viewCount.increment();
+                    viewCount.increment(id);
                 } catch (InterruptedException ignored) {
                     Thread.currentThread().interrupt();
                 }
