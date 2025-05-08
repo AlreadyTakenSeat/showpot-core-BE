@@ -1,6 +1,7 @@
 package show.concurrency;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,7 +12,15 @@ public class ViewCount {
 
     private final Map<Long, ReentrantLock> lockMap = new ConcurrentHashMap<>();
     private final Lock globalLock = new ReentrantLock();
-    private final AtomicInteger count = new AtomicInteger(0); // int로 사용할 경우 동시성 문제가 발생, AtomicInteger의 경우 낙관적 락
+    private final AtomicInteger[] counts = new AtomicInteger[5];
+    private final Random random = new Random();
+
+
+    public ViewCount() {
+        for (int i = 0; i < counts.length; i++) {
+            counts[i] = new AtomicInteger(0);
+        }
+    }
 
     public void incrementWithIndividualLock(Long id) {
         ReentrantLock individualLock = lockMap.computeIfAbsent(id, k -> new ReentrantLock());
@@ -24,7 +33,7 @@ public class ViewCount {
                 System.out.println("Failed to lock for show ID: " + id);
                 return;
             }
-            increment();
+            increment(id);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("Thread interrupted while trying to lock for show ID: " + id);
@@ -45,7 +54,7 @@ public class ViewCount {
                 System.out.println("Failed to lock for show");
                 return;
             }
-            increment();
+            increment(0L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("Thread interrupted while trying to lock for show");
@@ -56,13 +65,17 @@ public class ViewCount {
         }
     }
 
-    public void increment() throws InterruptedException {
-        Thread.sleep(5);
-        count.incrementAndGet();
-        Thread.sleep(5);
+    public void increment(Long id) throws InterruptedException {
+        Thread.sleep(random.nextInt(4, 6));
+        counts[id.intValue()].incrementAndGet();
+        Thread.sleep(random.nextInt(4, 6));
     }
 
     public int getCount() {
-        return count.get();
+        int totalCount = 0;
+        for (AtomicInteger atomicInteger : counts) {
+            totalCount += atomicInteger.get();
+        }
+        return totalCount;
     }
 }
